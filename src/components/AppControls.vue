@@ -1,9 +1,9 @@
 <template>
   <footer>
     <div class="controls">
-      <button>Start/Stop</button>
+      <button @click="$emit('resume')">Start/Stop</button>
       <button @click="$emit('step')">Step</button>
-      <button>Presets</button>
+      <button @click="$emit('clear')">Clear</button>
     </div>
   </footer>
 </template>

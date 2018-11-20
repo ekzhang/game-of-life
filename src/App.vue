@@ -4,11 +4,20 @@
     @keydown.up="row0--"
     @keydown.down="row0++"
     @keydown.left="col0--"
-    @keydown.right="col0++">
-
+    @keydown.right="col0++"
+  >
     <AppHeader/>
-    <LifeGrid :cells="cells" @toggle="toggle" :row0="row0" :col0="col0"/>
-    <AppControls @step="step"/>
+    <LifeGrid
+      :cells="cells"
+      @toggle="toggle"
+      :row0="row0"
+      :col0="col0"
+    />
+    <AppControls
+      @step="step"
+      @clear="clear"
+      @resume="resume"
+    />
   </div>
 </template>
 
@@ -19,7 +28,7 @@ import LifeGrid from './components/LifeGrid.vue'
 import * as _ from 'lodash'
 
 function* neighbors(coords) {
-  const [ x, y ] = _.map(coords.split(','), parseInt)
+  const [ x, y ] = _.map(coords.split(','), s => parseInt(s))
   for (let i = x - 1; i <= x + 1; i++) {
     for (let j = y - 1; j <= y + 1; j++) {
       if (i != x || j != y)
@@ -29,8 +38,22 @@ function* neighbors(coords) {
 }
 
 function successor(cells) {
-  // TODO
-  return cells
+  const next = {}
+  for (const pos in cells) {
+    if (cells[pos]) {
+      for (const pos2 of neighbors(pos)) {
+        next[pos2] = 1 + (next[pos2] || 0)
+      }
+    }
+  }
+  for (const pos in next) {
+    const num = next[pos]
+    if (num < 2 || num > 3 || (num == 2 && !cells[pos]))
+      delete next[pos]
+    else
+      next[pos] = true
+  }
+  return next
 }
 
 export default {
@@ -39,7 +62,8 @@ export default {
     return {
       cells: {},
       row0: 0,
-      col0: 0
+      col0: 0,
+      timerID: 0,
     }
   },
   methods: {
@@ -48,6 +72,17 @@ export default {
     },
     step() {
       this.cells = successor(this.cells)
+    },
+    clear() {
+      this.cells = {}
+    },
+    resume() {
+      if (this.timerID) {
+        clearInterval(this.timerID)
+        this.timerID = null
+      }
+      else
+        this.timerID = setInterval(this.step, 100)
     }
   },
   components: {
@@ -70,6 +105,5 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
 }
 </style>
