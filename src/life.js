@@ -59,7 +59,21 @@ function rle(row) {
 }
 
 export function encode(cells) {
-  return toArray(cells).map(rle).join('$') + '!'
+  const ar = toArray(cells)
+  const lines = []
+  let numLines = 0
+  for (let i = 0; i < ar.length; i++) {
+    const row = rle(ar[i])
+    if (row) {
+      if (numLines) {
+        lines.push((numLines > 1 ? numLines : '') + '$')
+        numLines = 0
+      }
+      lines.push(row)
+    }
+    numLines++
+  }
+  return lines.join('') + '!'
 }
 
 export function decode(rle) {
