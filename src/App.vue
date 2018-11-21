@@ -6,24 +6,28 @@
     @keydown.left="col0--"
     @keydown.right="col0++"
   >
-    <AppHeader/>
+    <header>
+      <h1>Conway's Game of Life</h1>
+    </header>
+
     <LifeGrid
       :cells="cells"
       @toggle="toggle"
       :row0="row0"
       :col0="col0"
     />
-    <AppControls
-      @step="step"
-      @clear="clear"
-      @resume="resume"
-    />
+
+    <footer>
+      <div class="controls">
+        <button @click="resume">Start/Stop</button>
+        <button @click="step">Step</button>
+        <button @click="clear">Clear</button>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script>
-import AppHeader from './components/AppHeader.vue'
-import AppControls from './components/AppControls.vue'
 import LifeGrid from './components/LifeGrid.vue'
 import * as _ from 'lodash'
 
@@ -86,8 +90,6 @@ export default {
     }
   },
   components: {
-    AppHeader,
-    AppControls,
     LifeGrid
   }
 }
@@ -105,5 +107,25 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+}
+
+header {
+  margin: 20px;
+  background: rgba(255, 255, 255, 0.6);
+  z-index: 1;
+}
+
+header > h1 {
+  margin: 0;
+}
+
+footer {
+  height: 80px;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: 1px solid black;
+  padding: 10px;
+  background: rgba(211, 211, 211, 0.6);
+  z-index: 1;
 }
 </style>
