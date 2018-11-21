@@ -1,41 +1,45 @@
 import { unzip, min, max, fill, times } from 'lodash'
 
-function getPos(pos) {
-  const [ x, y ] = pos.split(',')
-  return [ parseInt(x), parseInt(y) ]
+const base = 67108864 // Math.pow(2, 26)
+
+export function pair(x, y) {
+  return x * base + y
+}
+
+export function unpair(pos) {
+  const x = Math.round(pos / base)
+  return [ x, pos - x * base ]
 }
 
 function* neighbors(pos) {
-  const [ x, y ] = getPos(pos)
-  for (let i = x - 1; i <= x + 1; i++) {
-    for (let j = y - 1; j <= y + 1; j++) {
-      if (i != x || j != y)
-        yield i + ',' + j
-    }
-  }
+  const [ x, y ] = unpair(pos)
+  yield pair(x - 1, y - 1)
+  yield pair(x - 1, y    )
+  yield pair(x - 1, y + 1)
+  yield pair(x    , y - 1)
+  yield pair(x    , y + 1)
+  yield pair(x + 1, y - 1)
+  yield pair(x + 1, y    )
+  yield pair(x + 1, y + 1)
 }
 
 export function successor(cells) {
-  const next = {}
-  for (const pos in cells) {
-    if (cells[pos]) {
-      for (const pos2 of neighbors(pos)) {
-        next[pos2] = 1 + (next[pos2] || 0)
-      }
+  const adjacent = new Map()
+  for (const pos of cells) {
+    for (const pos2 of neighbors(pos)) {
+      adjacent.set(pos2, 1 + (adjacent.get(pos2) || 0))
     }
   }
-  for (const pos in next) {
-    const num = next[pos]
-    if (num < 2 || num > 3 || (num == 2 && !cells[pos]))
-      delete next[pos]
-    else
-      next[pos] = true
+  const next = new Set()
+  for (const [ pos, cnt ] of adjacent) {
+    if (cnt == 3 || (cnt == 2 && cells.has(pos)))
+      next.add(pos)
   }
   return next
 }
 
 function toArray(cells) {
-  const [ x, y ] = unzip(Object.entries(cells).filter(p => p[1]).map(p => getPos(p[0])))
+  const [ x, y ] = unzip(Array.from(cells).map(unpair))
   if (x.length === 0)
     return [[false]]
   const minX = min(x), maxX = max(x), minY = min(y), maxY = max(y)
@@ -102,8 +106,8 @@ export function decode(rle) {
     row++
   }
   const dr = Math.floor(rows.length / 2), dc = Math.floor(numCols / 2)
-  const ret = {}
+  const ret = new Set()
   for (const [ r, c ] of cells)
-    ret[(r - dr) + ',' + (c - dc)] = true
+    ret.add(pair(r - dr, c - dc))
   return ret
 }

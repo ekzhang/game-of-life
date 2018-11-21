@@ -6,7 +6,7 @@
           <div class="cell"
             :class="{ alive }"
             :style="{ width: size + 'px', height: size + 'px' }"
-            @mousedown="$emit('toggle', (row0 + i) + ',' + (col0 + j))"
+            @mousedown="$emit('toggle', [row0 + i, col0 + j])"
           ></div>
         </td>
       </tr>
@@ -15,11 +15,12 @@
 </template>
 
 <script>
+import { pair } from '../life'
 import { throttle } from 'lodash'
 
 export default {
   props: {
-    cells: Object,
+    cells: Set,
     row0: Number,
     col0: Number,
     size: Number
@@ -42,7 +43,7 @@ export default {
       for (let i = 0; i < this.rows; i++) {
         const row = []
         for (let j = 0; j < this.cols; j++)
-          row.push(Boolean(this.cells[(this.row0 + i) + ',' + (this.col0 + j)]))
+          row.push(this.cells.has(pair(this.row0 + i, this.col0 + j)))
         grid.push(row)
       }
       return grid

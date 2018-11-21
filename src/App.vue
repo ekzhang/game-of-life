@@ -12,15 +12,15 @@
 
     <LifeGrid
       :cells="cells"
-      @toggle="toggle"
       :row0="row0"
       :col0="col0"
       :size="size"
+      @toggle="toggle"
     />
 
     <footer>
       <span class="controls">
-        Generation {{generation}}
+        Generation {{generation}} ({{generationTime}}ms)
       </span>
       <span class="controls">
         Live Cells: {{liveCount}}
@@ -72,39 +72,46 @@
 
 <script>
 import LifeGrid from './components/LifeGrid.vue'
-import { successor, encode, decode } from './life.js'
-import { sum } from 'lodash'
+import { pair, successor, encode, decode } from './life.js'
 
 export default {
   name: 'app',
   data() {
     return {
-      cells: {},
+      cells: new Set(),
       row0: 0,
       col0: 0,
       size: 15,
       speed: 2,
       generation: 0,
+      generationTime: 0,
       preset: '',
       timerID: null
     }
   },
   computed: {
     liveCount() {
-      return Number(sum(Object.values(this.cells)))
+      return this.cells.size
     }
   },
   methods: {
     toggle(cell) {
-      this.$set(this.cells, cell, !this.cells[cell])
+      cell = pair(cell[0], cell[1])
+      const cells = new Set(this.cells)
+      if (!cells.delete(cell))
+        cells.add(cell)
+      this.cells = cells // No automatic change detection for Sets
     },
     step() {
       this.generation++
+      const t0 = performance.now()
       this.cells = successor(this.cells)
+      this.generationTime = Math.ceil(performance.now() - t0)
     },
     clear() {
-      this.cells = {}
+      this.cells = new Set()
       this.generation = 0
+      this.generationTime = 0
     },
     resume() {
       if (this.timerID) {
@@ -121,6 +128,7 @@ export default {
       if (rle) {
         this.cells = decode(rle)
         this.generation = 0
+        this.generationTime = 0
         this.row0 = -Math.floor(document.body.clientHeight / (this.size + 1) / 2)
         this.col0 = -Math.floor(document.body.clientWidth / (this.size + 1) / 2)
       }
