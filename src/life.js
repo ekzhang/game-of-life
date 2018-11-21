@@ -1,14 +1,14 @@
 import { unzip, min, max, fill, times } from 'lodash'
 
-const base = 67108864 // Math.pow(2, 26)
+const BASE = 67108864 // Math.pow(2, 26)
 
 export function pair(x, y) {
-  return x * base + y
+  return x * BASE + y
 }
 
 export function unpair(pos) {
-  const x = Math.round(pos / base)
-  return [ x, pos - x * base ]
+  const x = Math.round(pos / BASE)
+  return [ x, pos - x * BASE ]
 }
 
 function* neighbors(pos) {

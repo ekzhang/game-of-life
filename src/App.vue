@@ -59,12 +59,12 @@
         </select>
       </span>
       <span class="controls">
-        <label for="size-input">Size</label>
-        <input id="size-input" type="range" v-model.number="size" min="10" max="30">
+        <label for="size-input">Zoom</label>
+        <input id="size-input" type="range" v-model.number="size" min="8" max="30">
       </span>
       <span class="controls">
         <label for="size-input">Speed</label>
-        <input id="size-input" type="range" v-model.number="speed" min="1" max="30">
+        <input id="size-input" type="range" v-model.number="speed" min="1" max="50">
       </span>
     </footer>
   </div>

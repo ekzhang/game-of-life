@@ -1,17 +1,16 @@
 <template>
-  <table class="grid">
-    <tbody>
-      <tr v-for="(row, i) in grid" :key="i">
-        <td v-for="(alive, j) in row" :key="j">
-          <div class="cell"
-            :class="{ alive }"
-            :style="{ width: size + 'px', height: size + 'px' }"
-            @mousedown="$emit('toggle', [row0 + i, col0 + j])"
-          ></div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <svg class="grid">
+    <g v-for="(row, i) in grid" :key="i">
+      <rect v-for="(alive, j) in row" :key="j"
+        :x="(size + 1) * j"
+        :y="(size + 1) * i"
+        :width="size + 'px'"
+        :height="size + 'px'"
+        :style="{ fill: alive ? 'black' : 'white' }"
+        @mousedown="$emit('toggle', [row0 + i, col0 + j])"
+      />
+    </g>
+  </svg>
 </template>
 
 <script>
@@ -69,20 +68,6 @@ export default {
   position: absolute;
   width: 100%;
   height: 100%;
-  border-spacing: 1px;
-  border-collapse: separate;
   background: lightgray;
-}
-
-.grid td {
-  padding: 0;
-}
-
-.cell {
-  background: white;
-}
-
-.cell.alive {
-  background: black;
 }
 </style>
