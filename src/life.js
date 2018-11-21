@@ -63,24 +63,29 @@ export function encode(cells) {
 }
 
 export function decode(rle) {
-  const rleRe = /^(\s*([0-9]*(o|b)\s*)*\$)*\s*([0-9]*(o|b)\s*)*!$/
+  const rleRe = /^\s*([0-9]*(o|b|\$)\s*)*!$/
   if (!rleRe.test(rle))
     throw new Error('Invalid RLE')
   const rows = rle.slice(0, -1).split('$')
   const cells = []
-  let numCols = 0
+  let row = 0, numCols = 0
   for (let i = 0; i < rows.length; i++) {
-    let index = 0, re = /([0-9]*)(o|b)/g
+    let index = 0, re = /([0-9]*)(o|b)|([0-9]+)/g
     let match
     while ((match = re.exec(rows[i])) !== null) {
+      if (!match[2]) {
+        row += parseInt(match[3]) - 1
+        break
+      }
       const num = parseInt(match[1] || 1)
       if (match[2] === 'o') {
-        for (let j = index; j < index + num; j++)
-          cells.push([i, j])
+        for (let col = index; col < index + num; col++)
+          cells.push([row, col])
       }
       index += num
       numCols = Math.max(numCols, index)
     }
+    row++
   }
   const dr = Math.floor(rows.length / 2), dc = Math.floor(numCols / 2)
   const ret = {}
