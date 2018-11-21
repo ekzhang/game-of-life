@@ -5,6 +5,7 @@
         <td v-for="(alive, j) in row" :key="j">
           <div class="cell"
             :class="{ alive }"
+            :style="{ width: size + 'px', height: size + 'px' }"
             @mousedown="$emit('toggle', (row0 + i) + ',' + (col0 + j))"
           ></div>
         </td>
@@ -16,13 +17,12 @@
 <script>
 import * as _ from 'lodash'
 
-const sz = 15
-
 export default {
   props: {
     cells: Object,
     row0: Number,
-    col0: Number
+    col0: Number,
+    size: Number
   },
   data() {
     return {
@@ -32,10 +32,10 @@ export default {
   },
   computed: {
     rows() {
-      return Math.ceil(this.height / (sz + 1))
+      return Math.ceil(this.height / (this.size + 1))
     },
     cols() {
-      return Math.ceil(this.width / (sz + 1))
+      return Math.ceil(this.width / (this.size + 1))
     },
     grid() {
       const grid = []
@@ -69,6 +69,7 @@ export default {
   width: 100%;
   height: 100%;
   border-spacing: 1px;
+  border-collapse: separate;
   background: lightgray;
 }
 
@@ -77,8 +78,6 @@ export default {
 }
 
 .cell {
-  width: 15px;
-  height: 15px;
   background: white;
 }
 

@@ -15,14 +15,29 @@
       @toggle="toggle"
       :row0="row0"
       :col0="col0"
+      :size="size"
     />
 
     <footer>
-      <div class="controls">
-        <button @click="resume">Start/Stop</button>
+      <span class="controls">
+        Generation {{generation}}
+      </span>
+      <span class="controls">
+        Live Cells: {{liveCount}}
+      </span>
+      <span class="controls">
+        <button @click="resume">{{ timerID ? 'Stop' : 'Start' }}</button>
         <button @click="step">Step</button>
         <button @click="clear">Clear</button>
-      </div>
+      </span>
+      <span class="controls">
+        <label for="size-input">Size</label>
+        <input id="size-input" type="range" v-model.number="size" min="10" max="30">
+      </span>
+      <span class="controls">
+        <label for="size-input">Speed</label>
+        <input id="size-input" type="range" v-model.number="speed" min="1" max="30">
+      </span>
     </footer>
   </div>
 </template>
@@ -67,7 +82,15 @@ export default {
       cells: {},
       row0: 0,
       col0: 0,
-      timerID: 0,
+      size: 15,
+      speed: 2,
+      generation: 0,
+      timerID: null
+    }
+  },
+  computed: {
+    liveCount() {
+      return Number(_.sum(Object.values(this.cells)))
     }
   },
   methods: {
@@ -75,10 +98,12 @@ export default {
       this.$set(this.cells, cell, !this.cells[cell])
     },
     step() {
+      this.generation++
       this.cells = successor(this.cells)
     },
     clear() {
       this.cells = {}
+      this.generation = 0
     },
     resume() {
       if (this.timerID) {
@@ -86,7 +111,15 @@ export default {
         this.timerID = null
       }
       else
-        this.timerID = setInterval(this.step, 100)
+        this.timerID = setInterval(this.step, 1000 / this.speed)
+    }
+  },
+  watch: {
+    speed(val) {
+      if (this.timerID) {
+        clearInterval(this.timerID)
+        this.timerID = setInterval(this.step, 1000 / val)
+      }
     }
   },
   components: {
@@ -120,6 +153,9 @@ header > h1 {
 }
 
 footer {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
   height: 80px;
   width: 100%;
   box-sizing: border-box;
@@ -127,5 +163,18 @@ footer {
   padding: 10px;
   background: rgba(211, 211, 211, 0.6);
   z-index: 1;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+}
+
+.controls button {
+  margin: 3px;
+}
+
+.controls label {
+  margin-right: 8px;
 }
 </style>
