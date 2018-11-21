@@ -105,7 +105,7 @@ export function decode(rle) {
     }
     row++
   }
-  const dr = Math.floor(rows.length / 2), dc = Math.floor(numCols / 2)
+  const dr = Math.floor(row / 2), dc = Math.floor(numCols / 2)
   const ret = new Set()
   for (const [ r, c ] of cells)
     ret.add(pair(r - dr, c - dc))
