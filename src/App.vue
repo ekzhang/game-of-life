@@ -31,6 +31,10 @@
         <button @click="clear">Clear</button>
       </span>
       <span class="controls">
+        <button @click="save">Save</button>
+        <button @click="loadPrompt">Load</button>
+      </span>
+      <span class="controls">
         <label for="size-input">Size</label>
         <input id="size-input" type="range" v-model.number="size" min="10" max="30">
       </span>
@@ -44,36 +48,8 @@
 
 <script>
 import LifeGrid from './components/LifeGrid.vue'
-import * as _ from 'lodash'
-
-function* neighbors(coords) {
-  const [ x, y ] = _.map(coords.split(','), s => parseInt(s))
-  for (let i = x - 1; i <= x + 1; i++) {
-    for (let j = y - 1; j <= y + 1; j++) {
-      if (i != x || j != y)
-        yield i + ',' + j
-    }
-  }
-}
-
-function successor(cells) {
-  const next = {}
-  for (const pos in cells) {
-    if (cells[pos]) {
-      for (const pos2 of neighbors(pos)) {
-        next[pos2] = 1 + (next[pos2] || 0)
-      }
-    }
-  }
-  for (const pos in next) {
-    const num = next[pos]
-    if (num < 2 || num > 3 || (num == 2 && !cells[pos]))
-      delete next[pos]
-    else
-      next[pos] = true
-  }
-  return next
-}
+import { successor, encode, decode } from './life.js'
+import { sum } from 'lodash'
 
 export default {
   name: 'app',
@@ -90,7 +66,7 @@ export default {
   },
   computed: {
     liveCount() {
-      return Number(_.sum(Object.values(this.cells)))
+      return Number(sum(Object.values(this.cells)))
     }
   },
   methods: {
@@ -112,6 +88,24 @@ export default {
       }
       else
         this.timerID = setInterval(this.step, 1000 / this.speed)
+    },
+    save() {
+      prompt('Current pattern in RLE format:', encode(this.cells))
+    },
+    load(rle) {
+      this.cells = decode(rle)
+      this.generation = 0
+      this.row0 = -Math.floor(document.body.clientHeight / (this.size + 1) / 2)
+      this.col0 = -Math.floor(document.body.clientWidth / (this.size + 1) / 2)
+    },
+    loadPrompt() {
+      const rle = prompt('Enter pattern RLE:')
+      try {
+        this.load(rle)
+      }
+      catch (e) {
+        alert('Invalid RLE format, please check your input')
+      }
     }
   },
   watch: {

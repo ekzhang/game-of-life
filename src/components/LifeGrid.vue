@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import * as _ from 'lodash'
+import { throttle } from 'lodash'
 
 export default {
   props: {
@@ -49,7 +49,7 @@ export default {
     }
   },
   methods: {
-    handleResize: _.throttle(function() {
+    handleResize: throttle(function() {
       this.width = document.body.clientWidth
       this.height = document.body.clientHeight
     }, 500)
