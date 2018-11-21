@@ -49,7 +49,7 @@ export default {
     }
   },
   methods: {
-    handleResize: _.throttle(function(evt) {
+    handleResize: _.throttle(function() {
       this.width = document.body.clientWidth
       this.height = document.body.clientHeight
     }, 500)
