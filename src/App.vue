@@ -74,11 +74,11 @@
       </span>
       <span class="controls">
         <label for="size-input">Zoom</label>
-        <input id="size-input" type="range" v-model.number="size" min="8" max="30">
+        <input id="size-input" type="range" v-model.number="size" min="4" max="20">
       </span>
       <span class="controls">
         <label for="size-input">Speed</label>
-        <input id="size-input" type="range" v-model.number="speed" min="1" max="50">
+        <input id="size-input" type="range" v-model.number="speed" min="1" max="100">
       </span>
     </footer>
   </div>
@@ -95,7 +95,7 @@ export default {
       cells: new Set(),
       row0: 0,
       col0: 0,
-      size: 15,
+      size: 12,
       speed: 2,
       generation: 0,
       generationTime: 0,
