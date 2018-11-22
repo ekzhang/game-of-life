@@ -12,10 +12,10 @@
 
     <footer>
       <span class="controls">
-        Generation {{generation}} ({{generationTime}}ms)
+        Generation {{generation}} {{generationTime !== null ? `(${generationTime}ms)` : ''}}
       </span>
       <span class="controls">
-        Live Cells: {{liveCount}}
+        Population: {{liveCount}}
       </span>
       <span class="controls">
         <button @click="resume">{{ timerID ? 'Stop' : 'Start' }}</button>
@@ -92,7 +92,7 @@ export default {
       size: 12,
       speed: 2,
       generation: 0,
-      generationTime: 0,
+      generationTime: null,
       preset: '',
       timerID: null
     }
@@ -119,7 +119,7 @@ export default {
     clear() {
       this.cells = new Set()
       this.generation = 0
-      this.generationTime = 0
+      this.generationTime = null
     },
     resume() {
       if (this.timerID) {
@@ -134,9 +134,8 @@ export default {
     },
     load(rle) {
       if (rle) {
+        this.clear()
         this.cells = decode(rle)
-        this.generation = 0
-        this.generationTime = 0
         this.$refs.lifeGrid.center()
       }
     },
