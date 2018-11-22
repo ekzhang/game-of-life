@@ -34,7 +34,7 @@
         <button @click="save">Save</button>
         <button @click="loadPrompt">Load</button>
         <select v-model="preset">
-          <option value="">--Pattern presets--</option>
+          <option value="">--Select a pattern--</option>
           <optgroup label="Guns and Rakes">
             <option value="24bo$22bobo$12b2o6b2o12b2o$11bo3bo4b2o12b2o$2o8bo5bo3b2o$2o8bo3bob2o4bobo$10bo5bo7bo$11bo3bo$12b2o!">Gosper Glider Gun</option>
             <option value="18b2o$19bo$19bobo14b2o$20b2o12b2o2bo$24b3o7b2ob2o$24b2ob2o7b3o$24bo2b2o12b2o$25b2o14bobo$43bo$43b2o$$2o$bo$bobo13b3o$2b2o3bo8bo3bo$6bob2o6bo4bo$5bo4bo6b2obo$6bo3bo8bo3b2o$7b3o13bobo$25bo$25b2o!">Period-22 Glider Gun</option>
