@@ -1,5 +1,5 @@
 <template>
-  <canvas class="grid" ref="canvas"></canvas>
+  <canvas class="grid" ref="canvas" @click="handleClick"></canvas>
 </template>
 
 <script>
@@ -37,6 +37,11 @@ export default {
     }
   },
   methods: {
+    handleClick(evt) {
+      const r = this.row0 + Math.floor(evt.clientY / (this.size + 1))
+      const c = this.col0 + Math.floor(evt.clientX / (this.size + 1))
+      this.$emit('toggle', [r, c])
+    },
     handleResize() {
       this.width = this.$refs.canvas.width = document.body.clientWidth
       this.height = this.$refs.canvas.height = document.body.clientHeight
