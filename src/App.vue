@@ -1,19 +1,11 @@
 <template>
-  <div id="app"
-    tabindex="1"
-    @keydown.up="row0--"
-    @keydown.down="row0++"
-    @keydown.left="col0--"
-    @keydown.right="col0++"
-  >
+  <div id="app" tabindex="1">
     <header>
       <h1>Conway's Game of Life</h1>
     </header>
 
-    <LifeGrid
+    <LifeGrid ref="lifeGrid"
       :cells="cells"
-      :row0="row0"
-      :col0="col0"
       :size="size"
       @toggle="toggle"
     />
@@ -52,7 +44,7 @@
           </optgroup>
           <optgroup label="Oscillators">
             <option value="2b3o3b3o$$o4bobo4bo$o4bobo4bo$o4bobo4bo$2b3o3b3o$$2b3o3b3o$o4bobo4bo$o4bobo4bo$o4bobo4bo$$2b3o3b3o!">Pulsar</option>
-            <option value="2bo2bobob$2obob3ob$bo6bo$2o5bob2$bo5b2o$o6bob$b3obob2o$bobo2bo!">Kok's Galaxy</option>
+            <option value="6ob2o$6ob2o$7b2o$2o5b2o$2o5b2o$2o5b2o$2o$2ob6o$2ob6o!">Kok's Galaxy</option>
             <option value="10o!">Pentadecathlon</option>
             <option value="11b2o11b2o$11b2o11b2o$$$6bo23bo$5bobo5bo9bo5bobo$4bo2bo5bob2o3b2obo5bo2bo$5b2o10bobo10b2o$15bobobobo$16bo3bo$$2o33b2o$2o33b2o$5b2o23b2o$$6bobo19bobo$6bo2bo17bo2bo$7b2o19b2o$$7b2o19b2o$6bo2bo17bo2bo$6bobo19bobo$$5b2o23b2o$2o33b2o$2o33b2o$$16bo3bo$15bobobobo$5b2o10bobo10b2o$4bo2bo5bob2o3b2obo5bo2bo$5bobo5bo9bo5bobo$6bo23bo$$$11b2o11b2o$11b2o11b2o!">124P37</option>
           </optgroup>
@@ -93,8 +85,6 @@ export default {
   data() {
     return {
       cells: new Set(),
-      row0: 0,
-      col0: 0,
       size: 12,
       speed: 2,
       generation: 0,
@@ -143,8 +133,7 @@ export default {
         this.cells = decode(rle)
         this.generation = 0
         this.generationTime = 0
-        this.row0 = -Math.floor(document.body.clientHeight / (this.size + 1) / 2)
-        this.col0 = -Math.floor(document.body.clientWidth / (this.size + 1) / 2)
+        this.$refs.lifeGrid.center()
       }
     },
     loadPrompt() {

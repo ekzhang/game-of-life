@@ -1,5 +1,10 @@
 <template>
-  <canvas class="grid" ref="canvas" @click="handleClick"></canvas>
+  <canvas class="grid"
+    ref="canvas"
+    v-hammer:tap="handleTap"
+    v-hammer:panstart="handlePanStart"
+    v-hammer:pan="handlePan"
+  ></canvas>
 </template>
 
 <script>
@@ -8,14 +13,14 @@ import { unpair } from '../life'
 export default {
   props: {
     cells: Set,
-    row0: Number,
-    col0: Number,
     size: Number
   },
   data() {
     return {
       width: null,
-      height: null
+      height: null,
+      row0: 0,
+      col0: 0
     }
   },
   computed: {
@@ -37,14 +42,26 @@ export default {
     }
   },
   methods: {
-    handleClick(evt) {
-      const r = this.row0 + Math.floor(evt.clientY / (this.size + 1))
-      const c = this.col0 + Math.floor(evt.clientX / (this.size + 1))
+    handleTap(evt) {
+      const r = this.row0 + Math.floor(evt.center.y / (this.size + 1))
+      const c = this.col0 + Math.floor(evt.center.x / (this.size + 1))
       this.$emit('toggle', [r, c])
+    },
+    handlePanStart() {
+      this.oldRow0 = this.row0
+      this.oldCol0 = this.col0
+    },
+    handlePan(evt) {
+      this.row0 = this.oldRow0 - Math.round(evt.deltaY / (this.size + 1))
+      this.col0 = this.oldCol0 - Math.round(evt.deltaX / (this.size + 1))
     },
     handleResize() {
       this.width = this.$refs.canvas.width = document.body.clientWidth
       this.height = this.$refs.canvas.height = document.body.clientHeight
+    },
+    center() {
+      this.row0 = Math.floor(-this.rows / 2)
+      this.col0 = Math.floor(-this.cols / 2)
     }
   },
   watch: {
