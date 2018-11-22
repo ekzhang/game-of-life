@@ -1,7 +1,8 @@
 <template>
   <div id="app" tabindex="1">
     <header>
-      <h1>Conway's Game of Life</h1>
+      <span>Generation {{generation}}{{generationTime !== null ? ` (${generationTime}ms)` : ''}}</span>
+      <span>Pop: {{liveCount}}</span>
     </header>
 
     <LifeGrid ref="lifeGrid"
@@ -11,12 +12,6 @@
     />
 
     <footer>
-      <span class="controls">
-        Generation {{generation}} {{generationTime !== null ? `(${generationTime}ms)` : ''}}
-      </span>
-      <span class="controls">
-        Population: {{liveCount}}
-      </span>
       <span class="controls">
         <button @click="resume">{{ timerID ? 'Stop' : 'Start' }}</button>
         <button @click="step">Step</button>
@@ -173,7 +168,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -181,13 +176,20 @@ export default {
 }
 
 header {
-  margin: 20px;
+  padding: 5px;
   background: rgba(255, 255, 255, 0.6);
   z-index: 1;
+  text-align: right;
 }
 
-header > h1 {
-  margin: 0;
+header > span {
+  padding: 0 20px;
+}
+
+header > span::before {
+  position: relative;
+  left: -20px;
+  content: "|";
 }
 
 footer {
