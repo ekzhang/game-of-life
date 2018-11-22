@@ -128,6 +128,7 @@ export default {
     this.ctx = this.$refs.canvas.getContext('2d')
     window.addEventListener('resize', this.handleResize)
     this.handleResize()
+    this.center()
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)

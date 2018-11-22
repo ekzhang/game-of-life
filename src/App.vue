@@ -64,6 +64,7 @@
             <option value="8b2o$7b2o$9bo$11b2o$10bo2$9bo2b2o$b2o5b2o4bo$2o5bo5bo$2bo4bobo3b2o$4bo2bo4b2obo$4b2o7b2o$8bo4bob2o$7bobo2bob2o$8bo!">One Per Generation</option>
             <option value="6bo$4bob2o$4bobo$4bo$2bo$obo!">10-cell Infinite Growth</option>
             <option value="59b2o$59b2o3$56b2o$56b2o8b2o$7b2o57bo$7b2o50b2o6bo$59b2o5b2o2$10b2o54b2o$2o8b2o55bo$bo61bo$o6b2o53bo3bo$2o5b2o55b2o2$2o$o$4bo43b3o$bo3bo41bo2bo$2b2o43bo3bo$46b2obobo$46b2ob2o$47b3o$17b3o$17bo2bo$16bo3bo29b2o$16bobob2o27bo2bo$17b2ob2o25b5o$18b3o25b2ob3o$46b3o$47bobo$16b2o22bo7b2o$15bo2bo10bo8b3o$16b5o8bobo5bo$16b3ob2o7b2o6b2o$19b3o$18bobo$18b2o15bo$34bobo$29bo3bo3bo$27b2o5b3o$28b2o2b2o3b2o11$7b4o24b2o$5b2o4b2o22b2o$5b2o5bo$7b2obobo$12bo9bo4bo$8bo3bo7b2ob4ob2o$8bo4bo8bo4bo$10b3o3bo$10b2o4bo$16b2o$18bo$18b3o3$21bo$20bob5o$19b2o5bo$19b2o3bo2bo$27bo$21b2obo2bo$24bo2bo$25b2o$25b2o!">Sawtooth 177</option>
+            <option value="20b3o17b3o26bo4b3o17b3o17b3o$15b2ob2obo19bob2ob2o20b3o2bo2bo12b2ob2obo19bob2ob2o$15b2o4bob2o13b2obo4b2o13b3o4bob2o4bo12b2o4bob2o13b2obo4b2o$14bo2bo3bobobo11bobobo3bo2bo11bo2bo5b4o3bo11bo2bo3bobobo11bobobo3bo2bo$21bobobob2o5b2obobobo21bo5b3o4bo18bobobob2o5b2obobobo$19bo3bobob2o5b2obobo3bo15bo3bo9bobo17bo3bobob2o5b2obobo3bo$20bobobob3o5b3obobobo16bo3bo30bobobob3o5b3obobobo$63bo4bo$24b3o9b3o21bobo5bo29b3o9b3o$24b3obobobobob3o29bo29b3obobobobob3o$25b5obob5o61b5obob5o$30bobo35bo35bobo$30b3o35bo35b3o$27bobo3bobo32bo32bobo3bobo2$25b2ob3ob3ob2o30bo30b2ob3ob3ob2o$25bo11bo30bo30bo11bo$24bo2bo7bo2bo29bo29bo2bo7bo2bo$24bo4bo3bo4bo59bo4bo3bo4bo$29bo3bo34bo34bo3bo$23b6o5b6o28bo28b6o5b6o$22b2o7bo7b2o27bo27b2o7bo7b2o$30bobo71bobo$30b3o12bo9bo12bo12bo9bo12b3o$43b4o7b4o10bo10b4o7b4o$19bo19b2ob2o3bo5bo3b2ob2o6bo6b2ob2o3bo5bo3b2ob2o19bo$17b4o18b2o2bo3bo5bo3bo2b2o13b2o2bo3bo5bo3bo2b2o18b4o$13b2ob2o3bo3bo12bo2bo7bobo7bo2bo11bo2bo7bobo7bo2bo12bo3bo3b2ob2o$13b2o2bo5b4o19bo2bobo2bo27bo2bobo2bo19b4o5bo2b2o$12bo2bo7bo3bo17b3obobob3o25b3obobob3o17bo3bo7bo2bo$21bo2bobo83bobo2bo$22bo7b3o14b2o3b2o29b2o3b2o14b3o7bo$33b2o12b2o3b2o29b2o3b2o12b2o$29bo4bo12bobobobo29bobobobo12bo4bo$29bo4bo11b2obobob2o27b2obobob2o11bo4bo$29bo3bo12b2obobob2o27b2obobob2o12bo3bo$31bo17bobo33bobo17bo$45bo9bo25bo9bo$46bo7bo27bo7bo3$45bo45bo$46b2o41b2o$45b2o43b2o26$8b3o17b3o$3b2ob2obo19bob2ob2o$3b2o4bob2o13b2obo4b2o$2bo2bo3bobobo11bobobo3bo2bo$9bobobob2o5b2obobobo28bobo15bobo$7bo3bobob2o5b2obobo3bo27b2o15b2o$8bobobob3o5b3obobobo28bo17bo2$12b3o9b3o$12b3obobobobob3o21b3o35b3o$13b5obob5o18bob2o3bo33bo3b2obo$18bobo22b3o3b3o2b3o23b3o2b3o3b3o$18b3o21bo3bo4b3obobo21bobob3o4bo3bo$15bobo3bobo19bo7bo4bo23bo4bo7bo$52b2o29b2o$13b2ob3ob3ob2o$13bo11bo$12bo2bo7bo2bo$12bo4bo3bo4bo$17bo3bo75b3o17b3o$11b6o5b6o64b2ob2obo19bob2ob2o$10b2o15b2o63b2o4bob2o13b2obo4b2o$19bo71bo2bo3bobobo11bobobo3bo2bo$17b2ob2o11bo9bo54bobobob2o5b2obobobo$18bobo10b4o7b4o50bo3bobob2o5b2obobo3bo$7bo11bo7b2ob2o3bo5bo3b2ob2o47bobobob3o5b3obobobo$5b4o18b2o2bo3bo5bo3bo2b2o$b2ob2o3bo3bo12bo2bo7bobo7bo2bo50b3o9b3o$b2o2bo5b4o19bo2bobo2bo58b3obobobobob3o$o2bo7bo3bo17b3obobob3o58b5obob5o$9bo2bobo51b2ob2o36bobo$10bo24b2o3b2o24b2ob2o36b3o$35b2o3b2o62bobo3bobo$22b2o11bobobobo$17b2o4b2o9b2obobob2o59b2ob3ob3ob2o$17b2o3b2o10b2obobob2o59bo11bo$17b2o3bo14bobo61bo2bo7bo2bo$33bo9bo57bo4bo3bo4bo$34bo7bo63bo3bo$100b6o5b6o$99b2o7bo7b2o$107bobo$84bo9bo12b3o$82b4o7b4o$78b2ob2o3bo5bo3b2ob2o19bo$78b2o2bo3bo5bo3bo2b2o18b4o$77bo2bo7bobo7bo2bo12bo3bo3b2ob2o$85bo2bobo2bo19b4o5bo2b2o$66b2ob2o13b3obobob3o17bo3bo7bo2bo$66b2ob2o42bobo2bo$86b2o3b2o14b3o7bo$86b2o3b2o12b2o$86bobobobo12bo4bo$85b2obobob2o11bo4bo$85b2obobob2o12bo3bo$88bobo17bo$84bo9bo$85bo7bo2$40bobo$41b2o51bo$41bo50b2o$93b2o4$66b2ob2o$66b2ob2o17$66b2ob2o$66b2ob2o5$54bo$55b2o$54b2o23bobo$79b2o$80bo8$66b2ob2o$66b2ob2o!">Moving Sawtooth</option>
           </optgroup>
         </select>
       </span>
@@ -103,6 +104,12 @@ export default {
     }
   },
   methods: {
+    handleWheel(evt) {
+      if (evt.deltaY < 0)
+        this.size = Math.max(this.size - 1, 1)
+      else
+        this.size = Math.min(this.size + 1, 20)
+    },
     toggle(cell) {
       cell = pair(cell[0], cell[1])
       const cells = new Set(this.cells)
@@ -171,6 +178,12 @@ export default {
     preset(val) {
       this.load(val)
     }
+  },
+  mounted() {
+    window.addEventListener('wheel', this.handleWheel)
+  },
+  beforeDestroy() {
+    window.removeEventListener('wheel', this.handleWheel)
   },
   components: {
     LifeGrid
