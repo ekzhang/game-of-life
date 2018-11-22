@@ -70,7 +70,7 @@
       </span>
       <span class="controls">
         <label for="size-input">Zoom</label>
-        <input id="size-input" type="range" v-model.number="size" min="4" max="20">
+        <input id="size-input" type="range" v-model.number="size" min="1" max="20">
       </span>
       <span class="controls">
         <label for="size-input">Speed</label>
