@@ -11,16 +11,12 @@ export function unpair(pos) {
   return [ x, pos - x * BASE ]
 }
 
-function* neighbors(pos) {
-  const [ x, y ] = unpair(pos)
-  yield pair(x - 1, y - 1)
-  yield pair(x - 1, y    )
-  yield pair(x - 1, y + 1)
-  yield pair(x    , y - 1)
-  yield pair(x    , y + 1)
-  yield pair(x + 1, y - 1)
-  yield pair(x + 1, y    )
-  yield pair(x + 1, y + 1)
+function neighbors(pos) {
+  return [
+    pos - BASE - 1, pos - BASE, pos - BASE + 1,
+    pos - 1, pos + 1,
+    pos + BASE - 1, pos + BASE, pos + BASE + 1
+  ];
 }
 
 export function successor(cells) {
