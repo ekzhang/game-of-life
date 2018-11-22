@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
+    "sweetalert2": "^7.29.1",
     "vue": "^2.5.17",
     "vue2-hammer": "^2.1.2"
   },

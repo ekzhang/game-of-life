@@ -1,6 +1,7 @@
 import { unzip, min, max, fill, times } from 'lodash'
 
 const BASE = 67108864 // Math.pow(2, 26)
+export const RLE_RE = /^\s*([0-9]*(o|b|\$)\s*)*!$/
 
 export function pair(x, y) {
   return x * BASE + y
@@ -35,9 +36,9 @@ export function successor(cells) {
 }
 
 function toArray(cells) {
-  const [ x, y ] = unzip(Array.from(cells).map(unpair))
-  if (x.length === 0)
+  if (cells.size === 0)
     return [[false]]
+  const [ x, y ] = unzip(Array.from(cells).map(unpair))
   const minX = min(x), maxX = max(x), minY = min(y), maxY = max(y)
   const ret = times(maxX - minX + 1, () => fill(new Array(maxY - minY + 1), false))
   for (let i = 0; i < x.length; i++)
@@ -77,8 +78,7 @@ export function encode(cells) {
 }
 
 export function decode(rle) {
-  const rleRe = /^\s*([0-9]*(o|b|\$)\s*)*!$/
-  if (!rleRe.test(rle))
+  if (!RLE_RE.test(rle))
     throw new Error('Invalid RLE')
   const rows = rle.slice(0, -1).split('$')
   const cells = []

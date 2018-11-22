@@ -77,7 +77,8 @@
 
 <script>
 import LifeGrid from './components/LifeGrid.vue'
-import { pair, successor, encode, decode } from './life.js'
+import { pair, successor, encode, decode, RLE_RE } from './life.js'
+import Swal from 'sweetalert2'
 
 export default {
   name: 'app',
@@ -125,23 +126,35 @@ export default {
         this.timerID = setInterval(this.step, 1000 / this.speed)
     },
     save() {
-      prompt('Current pattern in RLE format:', encode(this.cells))
+      Swal({
+        title: 'Save Pattern',
+        text: 'Current pattern in RLE format:',
+        input: 'text',
+        inputValue: encode(this.cells)
+      })
     },
     load(rle) {
       if (rle) {
+        const cells = decode(rle)
         this.clear()
-        this.cells = decode(rle)
+        this.cells = cells
         this.$refs.lifeGrid.center()
       }
     },
     loadPrompt() {
-      const rle = prompt('Enter pattern RLE:')
-      try {
-        this.load(rle)
-      }
-      catch (e) {
-        alert('Invalid RLE format, please check your input')
-      }
+      Swal({
+        title: 'Load Pattern',
+        text: 'Enter pattern RLE:',
+        input: 'text',
+        inputPlaceholder: 'b2o$2o$bo!',
+        showCancelButton: true,
+        inputValidator(value) {
+          if (!RLE_RE.test(value))
+            return 'Invalid RLE format, please check your input.'
+        }
+      }).then(({ value }) => {
+        this.load(value)
+      })
     }
   },
   watch: {
