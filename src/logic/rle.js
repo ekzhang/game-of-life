@@ -7,9 +7,9 @@ function toArray(cells) {
     return [[false]]
   const [ x, y ] = unzip(cells)
   const minX = min(x), maxX = max(x), minY = min(y), maxY = max(y)
-  const ret = times(maxX - minX + 1, () => fill(new Array(maxY - minY + 1), false))
+  const ret = times(maxY - minY + 1, () => fill(new Array(maxX - minX + 1), false))
   for (let i = 0; i < x.length; i++)
-    ret[x[i] - minX][y[i] - minY] = true
+    ret[y[i] - minY][x[i] - minX] = true
   return ret
 }
 
