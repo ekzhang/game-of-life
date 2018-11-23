@@ -135,7 +135,6 @@ class TreeNode {
     if (this.level < 2)
       throw new Error('Step can only be computed for nodes of level >= 2')
     else if (this.level === 2) {
-      // TODO slow simulation, base case
       this.result = this.slowSimulation()
     }
     else {
