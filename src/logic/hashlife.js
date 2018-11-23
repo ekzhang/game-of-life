@@ -237,35 +237,4 @@ export class LifeUniverse {
     }
     return universe
   }
-
-  debugPrint() {
-    const maxCoordinate = 1 << (this.root.level - 1)
-    const lines = []
-    for (let y = -maxCoordinate; y < maxCoordinate; y++) {
-      const line = []
-      for (let x = -maxCoordinate; x < maxCoordinate; x++) {
-        line.push(this.root.getBit(x, y) ? 'X' : '.')
-      }
-      lines.push(line.join(''))
-    }
-    console.log(lines.join('\n'))
-  }
 }
-
-// univ = new LifeUniverse()
-// univ.toggle(0, 0)
-// univ.toggle(1, 1)
-// univ.toggle(2, 1)
-// univ.toggle(0, 2)
-// univ.toggle(1, 2)
-// univ.debugPrint()
-// univ.step()
-// univ.debugPrint()
-// univ.step()
-// univ.debugPrint()
-// univ.step()
-// univ.debugPrint()
-// univ.step()
-// univ.debugPrint()
-// univ.step()
-// univ.debugPrint()
