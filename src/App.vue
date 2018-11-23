@@ -126,6 +126,7 @@ export default {
       this.universe = new LifeUniverse()
       this.generation = 0
       this.generationTime = null
+      this.update()
     },
     resume() {
       if (this.timerID) {
@@ -149,6 +150,7 @@ export default {
         this.clear()
         this.$refs.lifeGrid.center()
         this.universe = universe
+        this.update()
       }
     },
     loadPrompt() {
