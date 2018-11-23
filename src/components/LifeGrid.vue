@@ -98,16 +98,14 @@ export default {
       this.ctx.stroke()
     },
     drawCells() {
-      for (let r = this.row0; r < this.row0 + this.rows; r++) {
-        for (let c = this.col0; c < this.col0 + this.cols; c++) {
-          if (this.universe.get(c, r)) {
-            this.ctx.fillRect(
-              this.offset * (c - this.col0) - this.colOffset,
-              this.offset * (r - this.row0) - this.rowOffset,
-              this.size,
-              this.size)
-          }
-        }
+      const x1 = this.col0, x2 = this.col0 + this.cols
+      const y1 = this.row0, y2 = this.row0 + this.rows
+      for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2)) {
+        this.ctx.fillRect(
+          this.offset * (c - this.col0) - this.colOffset,
+          this.offset * (r - this.row0) - this.rowOffset,
+          this.size,
+          this.size)
       }
     },
     redraw() {

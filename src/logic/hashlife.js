@@ -157,31 +157,30 @@ class TreeNode {
     return this.result
   }
 
-  _cellList(ar, dx, dy) {
+  _cellList(ar, dx, dy, x1, x2, y1, y2) {
     if (this.pop === 0)
       return
     if (this.level === 0) {
-      ar.push([dx, dy])
+      if (dx >= x1 && dx < x2 && dy >= y1 && dy < y2)
+        ar.push([dx, dy])
     }
     else if (this.level === 1) {
-      this.nw._cellList(ar, dx - 1, dy - 1)
-      this.ne._cellList(ar, dx, dy - 1)
-      this.sw._cellList(ar, dx - 1, dy)
-      this.se._cellList(ar, dx, dy)
+      this.nw._cellList(ar, dx - 1, dy - 1, x1, x2, y1, y2)
+      this.ne._cellList(ar, dx, dy - 1, x1, x2, y1, y2)
+      this.sw._cellList(ar, dx - 1, dy, x1, x2, y1, y2)
+      this.se._cellList(ar, dx, dy, x1, x2, y1, y2)
     }
     else {
       const val = 1 << (this.level - 2)
-      this.nw._cellList(ar, dx - val, dy - val)
-      this.ne._cellList(ar, dx + val, dy - val)
-      this.sw._cellList(ar, dx - val, dy + val)
-      this.se._cellList(ar, dx + val, dy + val)
+      if (x1 < dx && y1 < dy)
+        this.nw._cellList(ar, dx - val, dy - val, x1, x2, y1, y2)
+      if (x2 > dx && y1 < dy)
+        this.ne._cellList(ar, dx + val, dy - val, x1, x2, y1, y2)
+      if (x1 < dx && y2 > dy)
+        this.sw._cellList(ar, dx - val, dy + val, x1, x2, y1, y2)
+      if (x2 > dx && y2 > dy)
+        this.se._cellList(ar, dx + val, dy + val, x1, x2, y1, y2)
     }
-  }
-
-  cellList() {
-    const ar = []
-    this._cellList(ar, 0, 0)
-    return ar
   }
 }
 
@@ -224,8 +223,22 @@ export class LifeUniverse {
     return this.root.pop
   }
 
+  cellList(x1, x2, y1, y2) {
+    if (x1 === undefined)
+      x1 = -Infinity
+    if (x2 === undefined)
+      x2 = Infinity
+    if (y1 === undefined)
+      y1 = -Infinity
+    if (y2 === undefined)
+      y2 = Infinity
+    const ar = []
+    this.root._cellList(ar, 0, 0, x1, x2, y1, y2)
+    return ar
+  }
+
   toRLE() {
-    return encode(this.root.cellList())
+    return encode(this.cellList())
   }
 
   static fromRLE(rle) {
