@@ -6,7 +6,7 @@
     </header>
 
     <LifeGrid ref="lifeGrid"
-      :cells="cells"
+      :universe="universe"
       :size="size"
       @toggle="toggle"
     />
@@ -82,25 +82,22 @@
 
 <script>
 import LifeGrid from './components/LifeGrid.vue'
-import { pair, successor, encode, decode, RLE_RE } from './life.js'
+import { RLE_RE } from './logic/rle'
+import { LifeUniverse } from './logic/hashlife'
 import Swal from 'sweetalert2'
 
 export default {
   name: 'app',
   data() {
     return {
-      cells: new Set(),
+      universe: new LifeUniverse(),
       size: 12,
       speed: 2,
       generation: 0,
       generationTime: null,
+      liveCount: 0,
       preset: '',
       timerID: null
-    }
-  },
-  computed: {
-    liveCount() {
-      return this.cells.size
     }
   },
   methods: {
@@ -110,21 +107,23 @@ export default {
       else
         this.size = Math.min(this.size + 1, 20)
     },
+    update() {
+      this.liveCount = this.universe.population
+      this.$refs.lifeGrid.redraw()
+    },
     toggle(cell) {
-      cell = pair(cell[0], cell[1])
-      const cells = new Set(this.cells)
-      if (!cells.delete(cell))
-        cells.add(cell)
-      this.cells = cells // No automatic change detection for Sets
+      this.universe.toggle(cell[0], cell[1])
+      this.update()
     },
     step() {
       this.generation++
       const t0 = performance.now()
-      this.cells = successor(this.cells)
+      this.universe.step()
       this.generationTime = Math.ceil(performance.now() - t0)
+      this.update()
     },
     clear() {
-      this.cells = new Set()
+      this.universe = new LifeUniverse()
       this.generation = 0
       this.generationTime = null
     },
@@ -141,15 +140,15 @@ export default {
         title: 'Save Pattern',
         text: 'Current pattern in RLE format:',
         input: 'text',
-        inputValue: encode(this.cells)
+        inputValue: this.universe.toRLE()
       })
     },
     load(rle) {
       if (rle) {
-        const cells = decode(rle)
+        const universe = LifeUniverse.fromRLE(rle)
         this.clear()
-        this.cells = cells
         this.$refs.lifeGrid.center()
+        this.universe = universe
       }
     },
     loadPrompt() {

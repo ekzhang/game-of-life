@@ -8,13 +8,13 @@
 </template>
 
 <script>
-import { unpair } from '../life'
+import { LifeUniverse } from '../logic/hashlife'
 
 const MIN_BORDER_PX = 4
 
 export default {
   props: {
-    cells: Set,
+    universe: LifeUniverse,
     size: Number
   },
   data() {
@@ -51,7 +51,7 @@ export default {
     },
     all() {
       return {
-        cells: this.cells,
+        universe: this.universe,
         rowx: this.rowx,
         colx: this.colx,
         size: this.size,
@@ -62,9 +62,9 @@ export default {
   },
   methods: {
     handleTap(evt) {
-      const r = Math.floor(this.rowx + evt.center.y / this.offset)
-      const c = Math.floor(this.colx + evt.center.x / this.offset)
-      this.$emit('toggle', [r, c])
+      const x = Math.floor(this.colx + evt.center.x / this.offset)
+      const y = Math.floor(this.rowx + evt.center.y / this.offset)
+      this.$emit('toggle', [x, y])
     },
     handlePanStart() {
       this.oldRowx = this.rowx
@@ -98,17 +98,24 @@ export default {
       this.ctx.stroke()
     },
     drawCells() {
-      for (const cell of this.cells) {
-        const [ r, c ] = unpair(cell)
-        if (r >= this.row0 && r < this.row0 + this.rows
-            && c >= this.col0 && c < this.col0 + this.cols) {
-          this.ctx.fillRect(
-            this.offset * (c - this.col0) - this.colOffset,
-            this.offset * (r - this.row0) - this.rowOffset,
-            this.size,
-            this.size)
+      for (let r = this.row0; r < this.row0 + this.rows; r++) {
+        for (let c = this.col0; c < this.col0 + this.cols; c++) {
+          if (this.universe.get(c, r)) {
+            this.ctx.fillRect(
+              this.offset * (c - this.col0) - this.colOffset,
+              this.offset * (r - this.row0) - this.rowOffset,
+              this.size,
+              this.size)
+          }
         }
       }
+    },
+    redraw() {
+      this.ctx.clearRect(0, 0, this.width, this.height)
+      if (this.size >= MIN_BORDER_PX) {
+        this.drawGrid()
+      }
+      this.drawCells()
     }
   },
   watch: {
@@ -117,11 +124,7 @@ export default {
       this.colx += this.width / 2 * (1 / oldOffset - 1 / newOffset)
     },
     all() {
-      this.ctx.clearRect(0, 0, this.width, this.height)
-      if (this.size >= MIN_BORDER_PX) {
-        this.drawGrid()
-      }
-      this.drawCells()
+      this.redraw()
     }
   },
   mounted() {

@@ -1,3 +1,5 @@
+import { encode, decode } from './rle'
+
 class TreeNode {
   constructor(nw, ne, sw, se) {
     if (!ne && !sw && !se) {
@@ -155,6 +157,33 @@ class TreeNode {
     }
     return this.result
   }
+
+  _cellList(ar, dx, dy) {
+    if (this.pop === 0)
+      return
+    if (this.level === 0) {
+      ar.push([dx, dy])
+    }
+    else if (this.level === 1) {
+      this.nw._cellList(ar, dx - 1, dy - 1)
+      this.ne._cellList(ar, dx, dy - 1)
+      this.sw._cellList(ar, dx - 1, dy)
+      this.se._cellList(ar, dx, dy)
+    }
+    else {
+      const val = 1 << (this.level - 2)
+      this.nw._cellList(ar, dx - val, dy - val)
+      this.ne._cellList(ar, dx + val, dy - val)
+      this.sw._cellList(ar, dx - val, dy + val)
+      this.se._cellList(ar, dx + val, dy + val)
+    }
+  }
+
+  cellList() {
+    const ar = []
+    this._cellList(ar, 0, 0)
+    return ar
+  }
 }
 
 TreeNode.pool = new Map()
@@ -164,12 +193,21 @@ export class LifeUniverse {
     this.root = TreeNode.emptyTree(3)
   }
 
-  get(x, y) {
+  expandTo(x, y) {
     while (Math.max(x, y) >= (1 << (this.root.level - 1))
       || Math.min(x, y) < -(1 << (this.root.level - 1))) {
       this.root = this.root.expand()
     }
+  }
+
+  get(x, y) {
+    this.expandTo(x, y)
     return this.root.getBit(x, y)
+  }
+
+  set(x, y, c) {
+    this.expandTo(x, y)
+    this.root = this.root.setBit(x, y, c)
   }
 
   toggle(x, y) {
@@ -181,6 +219,23 @@ export class LifeUniverse {
     while (this.root.level < 3 || this.root.centeredSubSubnode().pop !== this.root.pop)
       this.root = this.root.expand()
     this.root = this.root.step()
+  }
+
+  get population() {
+    return this.root.pop
+  }
+
+  toRLE() {
+    return encode(this.root.cellList())
+  }
+
+  static fromRLE(rle) {
+    const universe = new this()
+    const cells = decode(rle)
+    for (const [ x, y ] of cells) {
+      universe.set(x, y, 1)
+    }
+    return universe
   }
 
   debugPrint() {

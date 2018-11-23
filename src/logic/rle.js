@@ -1,44 +1,11 @@
 import { unzip, min, max, fill, times } from 'lodash'
 
-const BASE = 67108864 // Math.pow(2, 26)
 export const RLE_RE = /^\s*([0-9]*(o|b|\$)\s*)*!$/
 
-export function pair(x, y) {
-  return x * BASE + y
-}
-
-export function unpair(pos) {
-  const x = Math.round(pos / BASE)
-  return [ x, pos - x * BASE ]
-}
-
-function neighbors(pos) {
-  return [
-    pos - BASE - 1, pos - BASE, pos - BASE + 1,
-    pos - 1, pos + 1,
-    pos + BASE - 1, pos + BASE, pos + BASE + 1
-  ];
-}
-
-export function successor(cells) {
-  const adjacent = new Map()
-  for (const pos of cells) {
-    for (const pos2 of neighbors(pos)) {
-      adjacent.set(pos2, 1 + (adjacent.get(pos2) || 0))
-    }
-  }
-  const next = new Set()
-  for (const [ pos, cnt ] of adjacent) {
-    if (cnt == 3 || (cnt == 2 && cells.has(pos)))
-      next.add(pos)
-  }
-  return next
-}
-
 function toArray(cells) {
-  if (cells.size === 0)
+  if (cells.length === 0)
     return [[false]]
-  const [ x, y ] = unzip(Array.from(cells).map(unpair))
+  const [ x, y ] = unzip(cells)
   const minX = min(x), maxX = max(x), minY = min(y), maxY = max(y)
   const ret = times(maxX - minX + 1, () => fill(new Array(maxY - minY + 1), false))
   for (let i = 0; i < x.length; i++)
@@ -94,16 +61,16 @@ export function decode(rle) {
       const num = parseInt(match[1] || 1)
       if (match[2] === 'o') {
         for (let col = index; col < index + num; col++)
-          cells.push([row, col])
+          cells.push([col, row])
       }
       index += num
       numCols = Math.max(numCols, index)
     }
     row++
   }
-  const dr = Math.floor(row / 2), dc = Math.floor(numCols / 2)
-  const ret = new Set()
-  for (const [ r, c ] of cells)
-    ret.add(pair(r - dr, c - dc))
+  const dy = Math.floor(row / 2), dx = Math.floor(numCols / 2)
+  const ret = []
+  for (const [ x, y ] of cells)
+    ret.push([x - dx, y - dy])
   return ret
 }
