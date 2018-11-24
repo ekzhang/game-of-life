@@ -244,7 +244,7 @@ export class LifeUniverse {
 
   toggle(x, y) {
     const cur = this.get(x, y)
-    this.root = this.root.setBit(x, y, 1 - cur)
+    this.root = this.root.setBit(x, y, !cur)
   }
 
   step(k) {
@@ -280,7 +280,7 @@ export class LifeUniverse {
     const universe = new this()
     const cells = decode(rle)
     for (const [ x, y ] of cells) {
-      universe.set(x, y, 1)
+      universe.set(x, y, true)
     }
     return universe
   }
