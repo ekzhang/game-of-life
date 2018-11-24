@@ -72,8 +72,8 @@
         <input id="size-input" type="range" v-model.number="size" min="1" max="20">
       </span>
       <span class="controls">
-        <label for="size-input">Speed</label>
-        <input id="size-input" type="range" v-model.number="speed" min="1" max="100">
+        <label for="speed-input">Speed</label>
+        <input id="speed-input" type="range" v-model.number="speed" min="1" max="100">
       </span>
       <span class="controls">
         <button :disabled="stepSize <= 0" @click="stepSize--">-</button>
