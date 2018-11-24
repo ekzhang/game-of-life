@@ -8,13 +8,10 @@
 </template>
 
 <script>
-import { LifeUniverse } from '../logic/hashlife'
-
 const MIN_BORDER_PX = 4
 
 export default {
   props: {
-    universe: LifeUniverse,
     size: Number
   },
   data() {
@@ -51,7 +48,6 @@ export default {
     },
     all() {
       return {
-        universe: this.universe,
         rowx: this.rowx,
         colx: this.colx,
         size: this.size,
@@ -82,6 +78,10 @@ export default {
       this.rowx = -this.height / this.offset / 2
       this.colx = -this.width / this.offset / 2
     },
+    setUniverse(universe) {
+      this.universe = universe
+      this.redraw()
+    },
     drawGrid() {
       this.ctx.beginPath()
       for (let r = 0; r < this.rows; r++) {
@@ -98,14 +98,16 @@ export default {
       this.ctx.stroke()
     },
     drawCells() {
-      const x1 = this.col0, x2 = this.col0 + this.cols
-      const y1 = this.row0, y2 = this.row0 + this.rows
-      for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2)) {
-        this.ctx.fillRect(
-          this.offset * (c - this.col0) - this.colOffset,
-          this.offset * (r - this.row0) - this.rowOffset,
-          this.size,
-          this.size)
+      if (this.universe) {
+        const x1 = this.col0, x2 = this.col0 + this.cols
+        const y1 = this.row0, y2 = this.row0 + this.rows
+        for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2)) {
+          this.ctx.fillRect(
+            this.offset * (c - this.col0) - this.colOffset,
+            this.offset * (r - this.row0) - this.rowOffset,
+            this.size,
+            this.size)
+        }
       }
     },
     redraw() {

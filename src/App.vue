@@ -6,7 +6,6 @@
     </header>
 
     <LifeGrid ref="lifeGrid"
-      :universe="universe"
       :size="size"
       @toggle="toggle"
     />
@@ -90,7 +89,6 @@ export default {
   name: 'app',
   data() {
     return {
-      universe: new LifeUniverse(),
       size: 12,
       speed: 2,
       generation: 0,
@@ -109,7 +107,7 @@ export default {
     },
     update() {
       this.liveCount = this.universe.population
-      this.$refs.lifeGrid.redraw()
+      this.$refs.lifeGrid.setUniverse(this.universe)
     },
     toggle(cell) {
       this.universe.toggle(cell[0], cell[1])
@@ -182,6 +180,7 @@ export default {
   },
   mounted() {
     window.addEventListener('wheel', this.handleWheel)
+    this.universe = new LifeUniverse()
   },
   beforeDestroy() {
     window.removeEventListener('wheel', this.handleWheel)
