@@ -1,15 +1,20 @@
-import { unzip, min, max, fill, times } from 'lodash'
-
 export const RLE_RE = /^\s*([0-9]*(o|b|\$)\s*)*!$/
 
 function toArray(cells) {
   if (cells.length === 0)
     return [[false]]
-  const [ x, y ] = unzip(cells)
-  const minX = min(x), maxX = max(x), minY = min(y), maxY = max(y)
-  const ret = times(maxY - minY + 1, () => fill(new Array(maxX - minX + 1), false))
-  for (let i = 0; i < x.length; i++)
-    ret[y[i] - minY][x[i] - minX] = true
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity
+  for (const [ x, y ] of cells) {
+    minX = Math.min(minX, x)
+    maxX = Math.max(maxX, x)
+    minY = Math.min(minY, y)
+    maxY = Math.max(maxY, y)
+  }
+  const ret = []
+  for (let i = 0; i < maxY - minY + 1; i++)
+    ret.push(new Array(maxX - minX + 1).fill(false))
+  for (const [ x, y ] of cells)
+    ret[y - minY][x - minX] = true
   return ret
 }
 
