@@ -11,7 +11,7 @@ class TreeNode {
       this.pop = nw.pop + ne.pop + sw.pop + se.pop
       this.level = nw.level + 1
     }
-    this.result = null
+    this.result = {}
     this.id = Math.random()
   }
 
@@ -50,7 +50,7 @@ class TreeNode {
   getBit(x, y) {
     if (this.level === 1)
       return x < 0 ? (y < 0 ? this.nw : this.sw) : (y < 0 ? this.ne : this.se)
-    const val = 1 << (this.level - 2)
+    const val = Math.pow(2, this.level - 2)
     if (x < 0) {
       if (y < 0)
         return this.nw.getBit(x + val, y + val)
@@ -80,7 +80,7 @@ class TreeNode {
           return this.constructor.create(this.nw, this.ne, this.sw, c)
       }
     }
-    const val = 1 << (this.level - 2)
+    const val = Math.pow(2, this.level - 2)
     if (x < 0) {
       if (y < 0)
         return this.constructor.create(this.nw.setBit(x + val, y + val, c), this.ne, this.sw, this.se)
@@ -99,8 +99,16 @@ class TreeNode {
     return this.constructor.create(this.nw.se, this.ne.sw, this.sw.ne, this.se.nw)
   }
 
+  vertical(south) {
+    return this.constructor.create(this.sw, this.se, south.nw, south.ne)
+  }
+
   centeredVertical(south) {
     return this.constructor.create(this.sw.se, this.se.sw, south.nw.ne, south.ne.nw)
+  }
+
+  horizontal(east) {
+    return this.constructor.create(this.ne, east.nw, this.se, east.sw)
   }
 
   centeredHorizontal(east) {
@@ -135,13 +143,33 @@ class TreeNode {
     )
   }
 
-  step() {
-    if (this.result)
-      return this.result
+  step(k) {
+    if (this.result[k])
+      return this.result[k]
     if (this.level < 2)
       throw new Error('Step can only be computed for nodes of level >= 2')
-    else if (this.level === 2) {
-      this.result = this.slowSimulation()
+    if (k > this.level - 2)
+      throw new Error('Step size greater than level - 2')
+
+    if (this.level === 2) {
+      this.result[k] = this.slowSimulation()
+    }
+    else if (this.level === k + 2) {
+      const n00 = this.nw.step(k - 1)
+      const n01 = this.nw.horizontal(this.ne).step(k - 1)
+      const n02 = this.ne.step(k - 1)
+      const n10 = this.nw.vertical(this.sw).step(k - 1)
+      const n11 = this.centeredSubnode().step(k - 1)
+      const n12 = this.ne.vertical(this.se).step(k - 1)
+      const n20 = this.sw.step(k - 1)
+      const n21 = this.sw.horizontal(this.se).step(k - 1)
+      const n22 = this.se.step(k - 1)
+      this.result[k] = this.constructor.create(
+        this.constructor.create(n00, n01, n10, n11).step(k - 1),
+        this.constructor.create(n01, n02, n11, n12).step(k - 1),
+        this.constructor.create(n10, n11, n20, n21).step(k - 1),
+        this.constructor.create(n11, n12, n21, n22).step(k - 1)
+      )
     }
     else {
       const n00 = this.nw.centeredSubnode()
@@ -153,14 +181,14 @@ class TreeNode {
       const n20 = this.sw.centeredSubnode()
       const n21 = this.sw.centeredHorizontal(this.se)
       const n22 = this.se.centeredSubnode()
-      this.result = this.constructor.create(
-        this.constructor.create(n00, n01, n10, n11).step(),
-        this.constructor.create(n01, n02, n11, n12).step(),
-        this.constructor.create(n10, n11, n20, n21).step(),
-        this.constructor.create(n11, n12, n21, n22).step()
+      this.result[k] = this.constructor.create(
+        this.constructor.create(n00, n01, n10, n11).step(k),
+        this.constructor.create(n01, n02, n11, n12).step(k),
+        this.constructor.create(n10, n11, n20, n21).step(k),
+        this.constructor.create(n11, n12, n21, n22).step(k)
       )
     }
-    return this.result
+    return this.result[k]
   }
 
   _cellList(ar, dx, dy, x1, x2, y1, y2) {
@@ -177,7 +205,7 @@ class TreeNode {
         ar.push([dx, dy])
     }
     else {
-      const val = 1 << (this.level - 2)
+      const val = Math.pow(2, this.level - 2)
       if (x1 < dx && y1 < dy)
         this.nw._cellList(ar, dx - val, dy - val, x1, x2, y1, y2)
       if (x2 > dx && y1 < dy)
@@ -198,8 +226,8 @@ export class LifeUniverse {
   }
 
   expandTo(x, y) {
-    while (Math.max(x, y) >= (1 << (this.root.level - 1))
-      || Math.min(x, y) < -(1 << (this.root.level - 1))) {
+    while (Math.max(x, y) >= Math.pow(2, this.root.level - 1)
+      || Math.min(x, y) < -Math.pow(2, this.root.level - 1)) {
       this.root = this.root.expand()
     }
   }
@@ -219,10 +247,11 @@ export class LifeUniverse {
     this.root = this.root.setBit(x, y, 1 - cur)
   }
 
-  step() {
-    while (this.root.level < 3 || this.root.centeredSubSubnode().pop !== this.root.pop)
+  step(k) {
+    k = k || 0
+    while (this.root.level < 2 + k || this.root.centeredSubSubnode().pop !== this.root.pop)
       this.root = this.root.expand()
-    this.root = this.root.step()
+    this.root = this.root.step(k)
   }
 
   get population() {

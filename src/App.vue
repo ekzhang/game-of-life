@@ -75,6 +75,11 @@
         <label for="size-input">Speed</label>
         <input id="size-input" type="range" v-model.number="speed" min="1" max="100">
       </span>
+      <span class="controls">
+        <button :disabled="stepSize <= 0" @click="stepSize--">-</button>
+        <span style="margin: 0 8px;">Step Size: 2^{{stepSize}}</span>
+        <button :disabled="stepSize >= 32" @click="stepSize++">+</button>
+      </span>
     </footer>
   </div>
 </template>
@@ -91,6 +96,7 @@ export default {
     return {
       size: 12,
       speed: 2,
+      stepSize: 0,
       generation: 0,
       generationTime: null,
       liveCount: 0,
@@ -114,9 +120,9 @@ export default {
       this.update()
     },
     step() {
-      this.generation++
+      this.generation += Math.pow(2, this.stepSize)
       const t0 = performance.now()
-      this.universe.step()
+      this.universe.step(this.stepSize)
       this.generationTime = Math.ceil(performance.now() - t0)
       this.update()
     },
