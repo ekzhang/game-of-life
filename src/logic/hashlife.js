@@ -2,33 +2,27 @@ import { encode, decode } from './rle'
 
 class TreeNode {
   constructor(nw, ne, sw, se) {
-    if (!ne && !sw && !se) {
-      this.pop = 0 + nw
-      this.nw = this.ne = this.sw = this.se = null
-      this.level = 0
+    this.nw = nw, this.ne = ne, this.sw = sw, this.se = se
+    if (typeof nw !== 'object') {
+      this.pop = nw + ne + sw + se
+      this.level = 1
     }
-    else if (arguments.length === 4) {
-      if (nw.level != ne.level || ne.level != sw.level || sw.level != se.level)
-        throw new Error('QuadTree children must have equal levels')
-      this.nw = nw, this.ne = ne, this.sw = sw, this.se = se
+    else {
       this.pop = nw.pop + ne.pop + sw.pop + se.pop
       this.level = nw.level + 1
     }
-    else
-      throw new Error('Invalid number of constructor arguments: ' + arguments.length)
-
     this.result = null
     this.id = Math.random()
   }
 
   static hash(nw, ne, sw, se) {
     // Crappy hash function statistically, but hopefully it's good enough :/
-    return 0.3870661942527105 * nw.id + 0.7760699850060107 * ne.id
-      + 0.2888132005064035 * sw.id + 0.5184920551312162 * se.id
+    return 0.3870661942527105 * (nw.id || nw) + 0.7760699850060107 * (ne.id || ne)
+      + 0.2888132005064035 * (sw.id || sw) + 0.5184920551312162 * (se.id || se)
   }
 
   static create(nw, ne, sw, se) {
-    const hsh = ne ? this.hash(nw, ne, sw, se) : 0 + nw
+    const hsh = this.hash(nw, ne, sw, se)
     if (this.pool.has(hsh))
       return this.pool.get(hsh)
     const obj = new this(nw, ne, sw, se)
@@ -37,8 +31,8 @@ class TreeNode {
   }
 
   static emptyTree(level) {
-    if (level === 0)
-      return this.create(false)
+    if (level === 1)
+      return this.create(false, false, false, false)
     const n = this.emptyTree(level - 1)
     return this.create(n, n, n, n)
   }
@@ -54,8 +48,8 @@ class TreeNode {
   }
 
   getBit(x, y) {
-    if (this.level === 0)
-      return this.pop
+    if (this.level === 1)
+      return x < 0 ? (y < 0 ? this.nw : this.sw) : (y < 0 ? this.ne : this.se)
     const val = 1 << (this.level - 2)
     if (x < 0) {
       if (y < 0)
@@ -72,8 +66,20 @@ class TreeNode {
   }
 
   setBit(x, y, c) {
-    if (this.level === 0)
-      return this.constructor.create(c)
+    if (this.level === 1) {
+      if (x < 0) {
+        if (y < 0)
+          return this.constructor.create(c, this.ne, this.sw, this.se)
+        else
+          return this.constructor.create(this.nw, this.ne, c, this.se)
+      }
+      else {
+        if (y < 0)
+          return this.constructor.create(this.nw, c, this.sw, this.se)
+        else
+          return this.constructor.create(this.nw, this.ne, this.sw, c)
+      }
+    }
     const val = 1 << (this.level - 2)
     if (x < 0) {
       if (y < 0)
@@ -112,20 +118,20 @@ class TreeNode {
   slowSimulation() {
     if (this.level !== 2)
       throw new Error('Base case can only be called for level 2 nodes')
-    const x00 = this.nw.nw.pop
-    const x01 = this.nw.ne.pop + this.ne.nw.pop
-    const x02 = this.ne.ne.pop
-    const x10 = this.nw.sw.pop + this.sw.nw.pop
+    const x00 = this.nw.nw
+    const x01 = this.nw.ne + this.ne.nw
+    const x02 = this.ne.ne
+    const x10 = this.nw.sw + this.sw.nw
     const x11 = this.centeredSubnode().pop
-    const x12 = this.ne.se.pop + this.se.ne.pop
-    const x20 = this.sw.sw.pop
-    const x21 = this.sw.se.pop + this.se.sw.pop
-    const x22 = this.se.se.pop
+    const x12 = this.ne.se + this.se.ne
+    const x20 = this.sw.sw
+    const x21 = this.sw.se + this.se.sw
+    const x22 = this.se.se
     return this.constructor.create(
-      this.constructor.create(this.applyRule(x00 + x01 + x10 + x11 - this.nw.se.pop, this.nw.se.pop)),
-      this.constructor.create(this.applyRule(x01 + x02 + x11 + x12 - this.ne.sw.pop, this.ne.sw.pop)),
-      this.constructor.create(this.applyRule(x10 + x11 + x20 + x21 - this.sw.ne.pop, this.sw.ne.pop)),
-      this.constructor.create(this.applyRule(x11 + x12 + x21 + x22 - this.se.nw.pop, this.se.nw.pop))
+      this.applyRule(x00 + x01 + x10 + x11 - this.nw.se, this.nw.se),
+      this.applyRule(x01 + x02 + x11 + x12 - this.ne.sw, this.ne.sw),
+      this.applyRule(x10 + x11 + x20 + x21 - this.sw.ne, this.sw.ne),
+      this.applyRule(x11 + x12 + x21 + x22 - this.se.nw, this.se.nw)
     )
   }
 
@@ -160,15 +166,15 @@ class TreeNode {
   _cellList(ar, dx, dy, x1, x2, y1, y2) {
     if (this.pop === 0)
       return
-    if (this.level === 0) {
-      if (dx >= x1 && dx < x2 && dy >= y1 && dy < y2)
+    if (this.level === 1) {
+      if (this.nw && dx - 1 >= x1 && dx - 1 < x2 && dy - 1 >= y1 && dy - 1 < y2)
+        ar.push([dx - 1, dy - 1])
+      if (this.ne && dx >= x1 && dx < x2 && dy - 1 >= y1 && dy - 1 < y2)
+        ar.push([dx, dy - 1])
+      if (this.sw && dx - 1 >= x1 && dx - 1 < x2 && dy >= y1 && dy < y2)
+        ar.push([dx - 1, dy])
+      if (this.se && dx >= x1 && dx < x2 && dy >= y1 && dy < y2)
         ar.push([dx, dy])
-    }
-    else if (this.level === 1) {
-      this.nw._cellList(ar, dx - 1, dy - 1, x1, x2, y1, y2)
-      this.ne._cellList(ar, dx, dy - 1, x1, x2, y1, y2)
-      this.sw._cellList(ar, dx - 1, dy, x1, x2, y1, y2)
-      this.se._cellList(ar, dx, dy, x1, x2, y1, y2)
     }
     else {
       const val = 1 << (this.level - 2)
