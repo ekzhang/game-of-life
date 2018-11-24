@@ -198,6 +198,15 @@ export default {
 </script>
 
 <style>
+body {
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
 #app {
   position: relative;
   height: 100%;
