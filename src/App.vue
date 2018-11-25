@@ -3,6 +3,7 @@
     <header>
       <span>Generation {{generation}}{{generationTime !== null ? ` (${generationTime}ms)` : ''}}</span>
       <span>Pop: {{liveCount}}</span>
+      <span>{{-size > 0 ? pow2(-size) : 1}} : {{size > 0 ? pow2(size) : 1}}</span>
     </header>
 
     <LifeGrid ref="lifeGrid"
@@ -68,12 +69,13 @@
         </select>
       </span>
       <span class="controls">
-        <label for="size-input">Zoom</label>
-        <input id="size-input" type="range" v-model.number="size" min="1" max="20">
-      </span>
-      <span class="controls">
         <label for="speed-input">Speed</label>
         <input id="speed-input" type="range" v-model.number="speed" min="1" max="100">
+      </span>
+      <span class="controls">
+        <button :disabled="size <= -32" @click="size--">-</button>
+        <span style="margin: 0 8px;">Zoom</span>
+        <button :disabled="size >= 8" @click="size++">+</button>
       </span>
       <span class="controls">
         <button :disabled="stepSize <= 0" @click="stepSize--">-</button>
@@ -94,7 +96,7 @@ export default {
   name: 'app',
   data() {
     return {
-      size: 12,
+      size: 4,
       speed: 2,
       stepSize: 0,
       generation: 0,
@@ -105,11 +107,14 @@ export default {
     }
   },
   methods: {
+    pow2(k) {
+      return Math.pow(2, k)
+    },
     handleWheel(evt) {
       if (evt.deltaY < 0)
-        this.size = Math.max(this.size - 1, 1)
+        this.size = Math.max(this.size - 1, -32)
       else
-        this.size = Math.min(this.size + 1, 20)
+        this.size = Math.min(this.size + 1, 8)
     },
     update() {
       this.liveCount = this.universe.population

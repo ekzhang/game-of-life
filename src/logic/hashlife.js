@@ -191,10 +191,14 @@ class TreeNode {
     return this.result[k]
   }
 
-  _cellList(ar, dx, dy, x1, x2, y1, y2) {
+  _cellList(ar, dx, dy, x1, x2, y1, y2, coarseness) {
     if (this.pop === 0)
       return
-    if (this.level === 1) {
+    if (this.level <= coarseness) {
+      // Coarse mode; set pixel if any cells are alive
+      ar.push([dx, dy])
+    }
+    else if (this.level === 1) {
       if (this.nw && dx - 1 >= x1 && dx - 1 < x2 && dy - 1 >= y1 && dy - 1 < y2)
         ar.push([dx - 1, dy - 1])
       if (this.ne && dx >= x1 && dx < x2 && dy - 1 >= y1 && dy - 1 < y2)
@@ -207,13 +211,13 @@ class TreeNode {
     else {
       const val = Math.pow(2, this.level - 2)
       if (x1 < dx && y1 < dy)
-        this.nw._cellList(ar, dx - val, dy - val, x1, x2, y1, y2)
+        this.nw._cellList(ar, dx - val, dy - val, x1, x2, y1, y2, coarseness)
       if (x2 > dx && y1 < dy)
-        this.ne._cellList(ar, dx + val, dy - val, x1, x2, y1, y2)
+        this.ne._cellList(ar, dx + val, dy - val, x1, x2, y1, y2, coarseness)
       if (x1 < dx && y2 > dy)
-        this.sw._cellList(ar, dx - val, dy + val, x1, x2, y1, y2)
+        this.sw._cellList(ar, dx - val, dy + val, x1, x2, y1, y2, coarseness)
       if (x2 > dx && y2 > dy)
-        this.se._cellList(ar, dx + val, dy + val, x1, x2, y1, y2)
+        this.se._cellList(ar, dx + val, dy + val, x1, x2, y1, y2, coarseness)
     }
   }
 }
@@ -258,17 +262,17 @@ export class LifeUniverse {
     return this.root.pop
   }
 
-  cellList(x1, x2, y1, y2) {
-    if (x1 === undefined)
+  cellList(x1, x2, y1, y2, coarseness) {
+    if (x1 == null)
       x1 = -Infinity
-    if (x2 === undefined)
+    if (x2 == null)
       x2 = Infinity
-    if (y1 === undefined)
+    if (y1 == null)
       y1 = -Infinity
-    if (y2 === undefined)
+    if (y2 == null)
       y2 = Infinity
     const ar = []
-    this.root._cellList(ar, 0, 0, x1, x2, y1, y2)
+    this.root._cellList(ar, 0, 0, x1, x2, y1, y2, coarseness)
     return ar
   }
 

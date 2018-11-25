@@ -8,7 +8,7 @@
 </template>
 
 <script>
-const MIN_BORDER_PX = 4
+const MIN_BORDER_PX = 8
 
 export default {
   props: {
@@ -23,6 +23,9 @@ export default {
     }
   },
   computed: {
+    offset() {
+      return Math.pow(2, this.size)
+    },
     rows() {
       return Math.ceil(this.height / this.offset) + 1
     },
@@ -35,22 +38,22 @@ export default {
     col0() {
       return Math.floor(this.colx)
     },
+    cellWidth() {
+      if (this.offset >= MIN_BORDER_PX)
+        return this.offset - 1
+      return Math.max(1, this.offset)
+    },
     rowOffset() {
       return Math.round(this.offset * (this.rowx - this.row0))
     },
     colOffset() {
       return Math.round(this.offset * (this.colx - this.col0))
     },
-    offset() {
-      if (this.size >= MIN_BORDER_PX)
-        return this.size + 1
-      return this.size
-    },
     all() {
       return {
         rowx: this.rowx,
         colx: this.colx,
-        size: this.size,
+        size: this.offset,
         width: this.width,
         height: this.height
       };
@@ -85,12 +88,12 @@ export default {
     drawGrid() {
       this.ctx.beginPath()
       for (let r = 0; r < this.rows; r++) {
-        const y = this.offset * r - this.rowOffset + this.size + 0.5
+        const y = this.offset * r - this.rowOffset + this.cellWidth + 0.5
         this.ctx.moveTo(0, y)
         this.ctx.lineTo(this.width, y)
       }
       for (let c = 0; c < this.cols; c++) {
-        const x = this.offset * c - this.colOffset + this.size + 0.5
+        const x = this.offset * c - this.colOffset + this.cellWidth + 0.5
         this.ctx.moveTo(x, 0)
         this.ctx.lineTo(x, this.height)
       }
@@ -101,18 +104,18 @@ export default {
       if (this.universe) {
         const x1 = this.col0, x2 = this.col0 + this.cols
         const y1 = this.row0, y2 = this.row0 + this.rows
-        for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2)) {
+        for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2, -this.size)) {
           this.ctx.fillRect(
-            this.offset * (c - this.col0) - this.colOffset,
-            this.offset * (r - this.row0) - this.rowOffset,
-            this.size,
-            this.size)
+            Math.round(this.offset * (c - this.col0) - this.colOffset),
+            Math.round(this.offset * (r - this.row0) - this.rowOffset),
+            this.cellWidth,
+            this.cellWidth)
         }
       }
     },
     redraw() {
       this.ctx.clearRect(0, 0, this.width, this.height)
-      if (this.size >= MIN_BORDER_PX) {
+      if (this.offset >= MIN_BORDER_PX) {
         this.drawGrid()
       }
       this.drawCells()
