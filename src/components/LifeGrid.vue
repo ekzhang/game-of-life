@@ -101,50 +101,58 @@ export default {
       this.ctx.strokeStyle = '#D3D3D3'
       this.ctx.stroke()
     },
+    fillSquare(data, xx, yy, cellWidth) {
+      let width = cellWidth
+      let height = cellWidth
+      if (xx < 0) {
+        width += xx
+        xx = 0
+      }
+      if (xx + width > this.width) {
+        width = this.width - xx
+      }
+      if (yy < 0) {
+        height += yy
+        yy = 0
+      }
+      if (yy + height > this.height) {
+        height = this.height - yy
+      }
+      let pos = yy * this.width + xx
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          data[pos++] = COLOR
+        }
+        pos += this.width - width
+      }
+    },
+    drawNode(data, node, offset, dx, dy) {
+      if (!node || node.pop === 0 || dx + offset <= 0 || dy + offset <= 0
+          || dx >= this.width || dy >= this.height)
+        return
+      if (offset <= 1) {
+        data[dy * this.width + dx] = COLOR
+      }
+      else if (node === true) {
+        this.fillSquare(data, dx, dy, this.cellWidth)
+      }
+      else {
+        offset /= 2
+        this.drawNode(data, node.nw, offset, dx, dy)
+        this.drawNode(data, node.ne, offset, dx + offset, dy)
+        this.drawNode(data, node.sw, offset, dx, dy + offset)
+        this.drawNode(data, node.se, offset, dx + offset, dy + offset)
+      }
+    },
     drawCells() {
       if (this.universe) {
         const imageData = this.ctx.createImageData(this.width, this.height)
         const data = new Int32Array(imageData.data.buffer)
-        const x1 = this.col0, x2 = this.col0 + this.cols
-        const y1 = this.row0, y2 = this.row0 + this.rows
-        if (this.size > 0) {
-          for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2)) {
-            let xx = Math.round(this.offset * (c - this.col0) - this.colOffset)
-            let yy = Math.round(this.offset * (r - this.row0) - this.rowOffset)
-            let width = this.cellWidth
-            let height = this.cellWidth
-
-            if (xx < 0) {
-              width += xx
-              xx = 0
-            }
-            if (xx + width > this.width) {
-              width = this.width - xx
-            }
-            if (yy < 0) {
-              height += yy
-              yy = 0
-            }
-            if (yy + height > this.height) {
-              height = this.height - yy
-            }
-
-            let pos = yy * this.width + xx
-            for (let y = 0; y < height; y++) {
-              for (let x = 0; x < width; x++) {
-                data[pos++] = COLOR
-              }
-              pos += this.width - width
-            }
-          }
-        }
-        else {
-          for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2, -this.size)) {
-            let xx = Math.round(this.offset * (c - this.col0))
-            let yy = Math.round(this.offset * (r - this.row0))
-            data[yy * this.width + xx] = COLOR
-          }
-        }
+        const dim = Math.pow(2, this.universe.root.level)
+        this.drawNode(data, this.universe.root,
+          this.offset * dim,
+          Math.round((-this.col0 - dim / 2) * this.offset) - this.colOffset,
+          Math.round((-this.row0 - dim / 2) * this.offset) - this.rowOffset)
         this.ctx.putImageData(imageData, 0, 0)
       }
     },
