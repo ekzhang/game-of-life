@@ -191,33 +191,33 @@ class TreeNode {
     return this.result[k]
   }
 
-  _cellList(ar, dx, dy, x1, x2, y1, y2, coarseness) {
+  * _cellList(dx, dy, x1, x2, y1, y2, coarseness) {
     if (this.pop === 0)
       return
     if (this.level <= coarseness) {
       // Coarse mode; set pixel if any cells are alive
-      ar.push([dx, dy])
+      yield [dx, dy]
     }
     else if (this.level === 1) {
       if (this.nw && dx - 1 >= x1 && dx - 1 < x2 && dy - 1 >= y1 && dy - 1 < y2)
-        ar.push([dx - 1, dy - 1])
+        yield [dx - 1, dy - 1]
       if (this.ne && dx >= x1 && dx < x2 && dy - 1 >= y1 && dy - 1 < y2)
-        ar.push([dx, dy - 1])
+        yield [dx, dy - 1]
       if (this.sw && dx - 1 >= x1 && dx - 1 < x2 && dy >= y1 && dy < y2)
-        ar.push([dx - 1, dy])
+        yield [dx - 1, dy]
       if (this.se && dx >= x1 && dx < x2 && dy >= y1 && dy < y2)
-        ar.push([dx, dy])
+        yield [dx, dy]
     }
     else {
       const val = Math.pow(2, this.level - 2)
       if (x1 < dx && y1 < dy)
-        this.nw._cellList(ar, dx - val, dy - val, x1, x2, y1, y2, coarseness)
+        yield* this.nw._cellList(dx - val, dy - val, x1, x2, y1, y2, coarseness)
       if (x2 > dx && y1 < dy)
-        this.ne._cellList(ar, dx + val, dy - val, x1, x2, y1, y2, coarseness)
+        yield* this.ne._cellList(dx + val, dy - val, x1, x2, y1, y2, coarseness)
       if (x1 < dx && y2 > dy)
-        this.sw._cellList(ar, dx - val, dy + val, x1, x2, y1, y2, coarseness)
+        yield* this.sw._cellList(dx - val, dy + val, x1, x2, y1, y2, coarseness)
       if (x2 > dx && y2 > dy)
-        this.se._cellList(ar, dx + val, dy + val, x1, x2, y1, y2, coarseness)
+        yield* this.se._cellList(dx + val, dy + val, x1, x2, y1, y2, coarseness)
     }
   }
 }
@@ -262,7 +262,7 @@ export class LifeUniverse {
     return this.root.pop
   }
 
-  cellList(x1, x2, y1, y2, coarseness) {
+  * cellList(x1, x2, y1, y2, coarseness) {
     if (x1 == null)
       x1 = -Infinity
     if (x2 == null)
@@ -271,13 +271,11 @@ export class LifeUniverse {
       y1 = -Infinity
     if (y2 == null)
       y2 = Infinity
-    const ar = []
-    this.root._cellList(ar, 0, 0, x1, x2, y1, y2, coarseness)
-    return ar
+    yield* this.root._cellList(0, 0, x1, x2, y1, y2, coarseness)
   }
 
   toRLE() {
-    return encode(this.cellList())
+    return encode(Array.from(this.cellList()))
   }
 
   static fromRLE(rle) {
