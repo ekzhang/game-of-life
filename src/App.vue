@@ -3,6 +3,7 @@
     <header>
       <span>Generation {{generation}}{{generationTime !== null ? ` (${generationTime}ms)` : ''}}</span>
       <span>Pop: {{liveCount}}</span>
+      <span>Step: {{pow2(stepSize)}}</span>
       <span>{{-size > 0 ? pow2(-size) : 1}} : {{size > 0 ? pow2(size) : 1}}</span>
     </header>
 
@@ -79,7 +80,7 @@
       </span>
       <span class="controls">
         <button :disabled="stepSize <= 0" @click="stepSize--">-</button>
-        <span style="margin: 0 8px;">Step Size: 2^{{stepSize}}</span>
+        <span style="margin: 0 8px;">Step Size</span>
         <button :disabled="stepSize >= 32" @click="stepSize++">+</button>
       </span>
     </footer>
