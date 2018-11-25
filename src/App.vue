@@ -1,5 +1,5 @@
 <template>
-  <div id="app" tabindex="1">
+  <div id="app" tabindex="1" @keydown="handleKeydown">
     <header>
       <span>Generation {{generation}}{{generationTime !== null ? ` (${generationTime}ms)` : ''}}</span>
       <span>Pop: {{liveCount}}</span>
@@ -30,6 +30,11 @@
       <span class="controls">
         <label for="speed-input">Speed</label>
         <input id="speed-input" type="range" v-model.number="speed" min="1" max="100">
+      </span>
+      <span class="controls">
+        <button :disabled="zoom <= -32" @click="handleZoom(-1)">-</button>
+        <span style="margin: 0 8px;">Zoom</span>
+        <button :disabled="zoom >= 8" @click="handleZoom(+1)">+</button>
       </span>
       <span class="controls">
         <button :disabled="stepSize <= 0" @click="stepSize--">-</button>
@@ -67,14 +72,28 @@ export default {
       return Math.pow(2, k)
     },
     handleWheel(evt) {
-      if (evt.deltaY < 0 && this.zoom >= -32) {
-        this.zoom--
-        this.$refs.lifeGrid.zoom(-1, evt.pageX, evt.pageY)
-      }
-      else if (evt.deltaY > 0 && this.zoom <= 8) {
-        this.zoom++
-        this.$refs.lifeGrid.zoom(+1, evt.pageX, evt.pageY)
-      }
+      if (evt.deltaY < 0)
+        this.handleZoom(-1, evt.pageX, evt.pageY)
+      else
+        this.handleZoom(+1, evt.pageX, evt.pageY)
+    },
+    handleKeydown(evt) {
+      if (evt.keyCode === 219) // [
+        this.handleZoom(-1)
+      else if (evt.keyCode === 221) // ]
+        this.handleZoom(+1)
+      else if (evt.keyCode === 189) // -
+        this.stepSize = Math.max(this.stepSize - 1, 0)
+      else if (evt.keyCode === 187) // =
+        this.stepSize = Math.min(this.stepSize + 1, 32)
+    },
+    handleZoom(k, dx, dy) {
+      if (this.zoom + k > 8 || this.zoom + k < -32)
+        return
+      this.zoom += k
+      dx = dx || document.body.clientWidth / 2
+      dy = dy || document.body.clientHeight / 2
+      this.$refs.lifeGrid.zoom(k, dx, dy)
     },
     update() {
       this.liveCount = this.universe.population
