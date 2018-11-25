@@ -9,6 +9,7 @@
 
 <script>
 const MIN_BORDER_PX = 8
+const COLOR = 0xFF000000
 
 export default {
   props: {
@@ -102,23 +103,57 @@ export default {
     },
     drawCells() {
       if (this.universe) {
+        const imageData = this.ctx.createImageData(this.width, this.height)
+        const data = new Int32Array(imageData.data.buffer)
         const x1 = this.col0, x2 = this.col0 + this.cols
         const y1 = this.row0, y2 = this.row0 + this.rows
-        for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2, -this.size)) {
-          this.ctx.fillRect(
-            Math.round(this.offset * (c - this.col0) - this.colOffset),
-            Math.round(this.offset * (r - this.row0) - this.rowOffset),
-            this.cellWidth,
-            this.cellWidth)
+        if (this.size > 0) {
+          for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2)) {
+            let xx = Math.round(this.offset * (c - this.col0) - this.colOffset)
+            let yy = Math.round(this.offset * (r - this.row0) - this.rowOffset)
+            let width = this.cellWidth
+            let height = this.cellWidth
+
+            if (xx < 0) {
+              width += xx
+              xx = 0
+            }
+            if (xx + width > this.width) {
+              width = this.width - xx
+            }
+            if (yy < 0) {
+              height += yy
+              yy = 0
+            }
+            if (yy + height > this.height) {
+              height = this.height - yy
+            }
+
+            let pos = yy * this.width + xx
+            for (let y = 0; y < height; y++) {
+              for (let x = 0; x < width; x++) {
+                data[pos++] = COLOR
+              }
+              pos += this.width - width
+            }
+          }
         }
+        else {
+          for (const [ c, r ] of this.universe.cellList(x1, x2, y1, y2, -this.size)) {
+            let xx = Math.round(this.offset * (c - this.col0))
+            let yy = Math.round(this.offset * (r - this.row0))
+            data[yy * this.width + xx] = COLOR
+          }
+        }
+        this.ctx.putImageData(imageData, 0, 0)
       }
     },
     redraw() {
       this.ctx.clearRect(0, 0, this.width, this.height)
+      this.drawCells()
       if (this.offset >= MIN_BORDER_PX) {
         this.drawGrid()
       }
-      this.drawCells()
     }
   },
   watch: {
