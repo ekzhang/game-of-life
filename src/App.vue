@@ -189,6 +189,9 @@ body {
   bottom: 0;
   margin: 0;
   overflow: hidden;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #app {
@@ -198,9 +201,6 @@ body {
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-end;
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
 }
 
