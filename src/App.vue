@@ -139,6 +139,9 @@ export default {
         this.$refs.lifeGrid.center()
         this.universe = universe
         this.update()
+        const px = Math.min(document.body.clientWidth, document.body.clientHeight)
+        const zoomGoal = Math.min(4, Math.round(Math.log2(px) - universe.root.level))
+        this.handleZoom(zoomGoal - this.zoom)
       }
     },
     loadPrompt() {
