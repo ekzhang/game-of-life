@@ -73,9 +73,9 @@ export default {
     },
     handleWheel(evt) {
       if (evt.deltaY < 0)
-        this.handleZoom(-1, evt.pageX, evt.pageY)
-      else
         this.handleZoom(+1, evt.pageX, evt.pageY)
+      else
+        this.handleZoom(-1, evt.pageX, evt.pageY)
     },
     handleKeydown(evt) {
       if (evt.keyCode === 219) // [
