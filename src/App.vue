@@ -173,7 +173,12 @@ export default {
   },
   mounted() {
     window.addEventListener('wheel', this.handleWheel)
-    this.universe = new LifeUniverse()
+    // this.universe = new LifeUniverse()
+    const allExamples = []
+    for (const group in this.examples)
+      for (const name in this.examples[group])
+        allExamples.push(this.examples[group][name])
+    this.preset = allExamples[Math.floor(Math.random() * allExamples.length)]
   },
   beforeDestroy() {
     window.removeEventListener('wheel', this.handleWheel)
