@@ -11,7 +11,8 @@ class TreeNode {
       this.pop = nw.pop + ne.pop + sw.pop + se.pop
       this.level = nw.level + 1
     }
-    this.result = {}
+    this.result = null
+    this.resultStep = -1
     this.id = Math.random()
   }
 
@@ -144,15 +145,15 @@ class TreeNode {
   }
 
   step(k) {
-    if (this.result[k])
-      return this.result[k]
+    if (this.resultStep === k)
+      return this.result
     if (this.level < 2)
       throw new Error('Step can only be computed for nodes of level >= 2')
     if (k > this.level - 2)
       throw new Error('Step size greater than level - 2')
 
     if (this.level === 2) {
-      this.result[k] = this.slowSimulation()
+      this.result = this.slowSimulation()
     }
     else if (this.level === k + 2) {
       const n00 = this.nw.step(k - 1)
@@ -164,7 +165,7 @@ class TreeNode {
       const n20 = this.sw.step(k - 1)
       const n21 = this.sw.horizontal(this.se).step(k - 1)
       const n22 = this.se.step(k - 1)
-      this.result[k] = this.constructor.create(
+      this.result = this.constructor.create(
         this.constructor.create(n00, n01, n10, n11).step(k - 1),
         this.constructor.create(n01, n02, n11, n12).step(k - 1),
         this.constructor.create(n10, n11, n20, n21).step(k - 1),
@@ -181,14 +182,15 @@ class TreeNode {
       const n20 = this.sw.centeredSubnode()
       const n21 = this.sw.centeredHorizontal(this.se)
       const n22 = this.se.centeredSubnode()
-      this.result[k] = this.constructor.create(
+      this.result = this.constructor.create(
         this.constructor.create(n00, n01, n10, n11).step(k),
         this.constructor.create(n01, n02, n11, n12).step(k),
         this.constructor.create(n10, n11, n20, n21).step(k),
         this.constructor.create(n11, n12, n21, n22).step(k)
       )
     }
-    return this.result[k]
+    this.resultStep = k
+    return this.result
   }
 
   _cellList(ar, dx, dy) {
