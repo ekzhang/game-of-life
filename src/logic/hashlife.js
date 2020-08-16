@@ -2,12 +2,14 @@ import { encode, decode } from './rle'
 
 class TreeNode {
   constructor(nw, ne, sw, se) {
-    this.nw = nw, this.ne = ne, this.sw = sw, this.se = se
+    this.nw = nw
+    this.ne = ne
+    this.sw = sw
+    this.se = se
     if (typeof nw !== 'object') {
       this.pop = nw + ne + sw + se
       this.level = 1
-    }
-    else {
+    } else {
       this.pop = nw.pop + ne.pop + sw.pop + se.pop
       this.level = nw.level + 1
     }
@@ -18,22 +20,24 @@ class TreeNode {
 
   static hash(nw, ne, sw, se) {
     // Crappy hash function statistically, but hopefully it's good enough :/
-    return 0.3870661942527105 * (nw.id || nw) + 0.7760699850060107 * (ne.id || ne)
-      + 0.2888132005064035 * (sw.id || sw) + 0.5184920551312162 * (se.id || se)
+    return (
+      0.3870661942527105 * (nw.id || nw) +
+      0.7760699850060107 * (ne.id || ne) +
+      0.2888132005064035 * (sw.id || sw) +
+      0.5184920551312162 * (se.id || se)
+    )
   }
 
   static create(nw, ne, sw, se) {
     const hsh = this.hash(nw, ne, sw, se)
-    if (this.pool.has(hsh))
-      return this.pool.get(hsh)
+    if (this.pool.has(hsh)) return this.pool.get(hsh)
     const obj = new this(nw, ne, sw, se)
     this.pool.set(hsh, obj)
     return obj
   }
 
   static emptyTree(level) {
-    if (level === 1)
-      return this.create(false, false, false, false)
+    if (level === 1) return this.create(false, false, false, false)
     const n = this.emptyTree(level - 1)
     return this.create(n, n, n, n)
   }
@@ -50,54 +54,68 @@ class TreeNode {
 
   getBit(x, y) {
     if (this.level === 1)
-      return x < 0 ? (y < 0 ? this.nw : this.sw) : (y < 0 ? this.ne : this.se)
+      return x < 0 ? (y < 0 ? this.nw : this.sw) : y < 0 ? this.ne : this.se
     const val = Math.pow(2, this.level - 2)
     if (x < 0) {
-      if (y < 0)
-        return this.nw.getBit(x + val, y + val)
-      else
-        return this.sw.getBit(x + val, y - val)
-    }
-    else {
-      if (y < 0)
-        return this.ne.getBit(x - val, y + val)
-      else
-        return this.se.getBit(x - val, y - val)
+      if (y < 0) return this.nw.getBit(x + val, y + val)
+      else return this.sw.getBit(x + val, y - val)
+    } else {
+      if (y < 0) return this.ne.getBit(x - val, y + val)
+      else return this.se.getBit(x - val, y - val)
     }
   }
 
   setBit(x, y, c) {
     if (this.level === 1) {
       if (x < 0) {
-        if (y < 0)
-          return this.constructor.create(c, this.ne, this.sw, this.se)
-        else
-          return this.constructor.create(this.nw, this.ne, c, this.se)
-      }
-      else {
-        if (y < 0)
-          return this.constructor.create(this.nw, c, this.sw, this.se)
-        else
-          return this.constructor.create(this.nw, this.ne, this.sw, c)
+        if (y < 0) return this.constructor.create(c, this.ne, this.sw, this.se)
+        else return this.constructor.create(this.nw, this.ne, c, this.se)
+      } else {
+        if (y < 0) return this.constructor.create(this.nw, c, this.sw, this.se)
+        else return this.constructor.create(this.nw, this.ne, this.sw, c)
       }
     }
     const val = Math.pow(2, this.level - 2)
     if (x < 0) {
       if (y < 0)
-        return this.constructor.create(this.nw.setBit(x + val, y + val, c), this.ne, this.sw, this.se)
+        return this.constructor.create(
+          this.nw.setBit(x + val, y + val, c),
+          this.ne,
+          this.sw,
+          this.se
+        )
       else
-        return this.constructor.create(this.nw, this.ne, this.sw.setBit(x + val, y - val, c), this.se)
-    }
-    else {
+        return this.constructor.create(
+          this.nw,
+          this.ne,
+          this.sw.setBit(x + val, y - val, c),
+          this.se
+        )
+    } else {
       if (y < 0)
-        return this.constructor.create(this.nw, this.ne.setBit(x - val, y + val, c), this.sw, this.se)
+        return this.constructor.create(
+          this.nw,
+          this.ne.setBit(x - val, y + val, c),
+          this.sw,
+          this.se
+        )
       else
-        return this.constructor.create(this.nw, this.ne, this.sw, this.se.setBit(x - val, y - val, c))
+        return this.constructor.create(
+          this.nw,
+          this.ne,
+          this.sw,
+          this.se.setBit(x - val, y - val, c)
+        )
     }
   }
 
   centeredSubnode() {
-    return this.constructor.create(this.nw.se, this.ne.sw, this.sw.ne, this.se.nw)
+    return this.constructor.create(
+      this.nw.se,
+      this.ne.sw,
+      this.sw.ne,
+      this.se.nw
+    )
   }
 
   vertical(south) {
@@ -105,7 +123,12 @@ class TreeNode {
   }
 
   centeredVertical(south) {
-    return this.constructor.create(this.sw.se, this.se.sw, south.nw.ne, south.ne.nw)
+    return this.constructor.create(
+      this.sw.se,
+      this.se.sw,
+      south.nw.ne,
+      south.ne.nw
+    )
   }
 
   horizontal(east) {
@@ -113,11 +136,21 @@ class TreeNode {
   }
 
   centeredHorizontal(east) {
-    return this.constructor.create(this.ne.se, east.nw.sw, this.se.ne, east.sw.nw)
+    return this.constructor.create(
+      this.ne.se,
+      east.nw.sw,
+      this.se.ne,
+      east.sw.nw
+    )
   }
 
   centeredSubSubnode() {
-    return this.constructor.create(this.nw.se.se, this.ne.sw.sw, this.sw.ne.ne, this.se.nw.nw)
+    return this.constructor.create(
+      this.nw.se.se,
+      this.ne.sw.sw,
+      this.sw.ne.ne,
+      this.se.nw.nw
+    )
   }
 
   applyRule(neighbors, current) {
@@ -145,17 +178,14 @@ class TreeNode {
   }
 
   step(k) {
-    if (this.resultStep === k)
-      return this.result
+    if (this.resultStep === k) return this.result
     if (this.level < 2)
       throw new Error('Step can only be computed for nodes of level >= 2')
-    if (k > this.level - 2)
-      throw new Error('Step size greater than level - 2')
+    if (k > this.level - 2) throw new Error('Step size greater than level - 2')
 
     if (this.level === 2) {
       this.result = this.slowSimulation()
-    }
-    else if (this.level === k + 2) {
+    } else if (this.level === k + 2) {
       const n00 = this.nw.step(k - 1)
       const n01 = this.nw.horizontal(this.ne).step(k - 1)
       const n02 = this.ne.step(k - 1)
@@ -171,8 +201,7 @@ class TreeNode {
         this.constructor.create(n10, n11, n20, n21).step(k - 1),
         this.constructor.create(n11, n12, n21, n22).step(k - 1)
       )
-    }
-    else {
+    } else {
       const n00 = this.nw.centeredSubnode()
       const n01 = this.nw.centeredHorizontal(this.ne)
       const n02 = this.ne.centeredSubnode()
@@ -194,19 +223,13 @@ class TreeNode {
   }
 
   _cellList(ar, dx, dy) {
-    if (this.pop === 0)
-      return
+    if (this.pop === 0) return
     else if (this.level === 1) {
-      if (this.nw)
-        ar.push([dx - 1, dy - 1])
-      if (this.ne)
-        ar.push([dx, dy - 1])
-      if (this.sw)
-        ar.push([dx - 1, dy])
-      if (this.se)
-        ar.push([dx, dy])
-    }
-    else {
+      if (this.nw) ar.push([dx - 1, dy - 1])
+      if (this.ne) ar.push([dx, dy - 1])
+      if (this.sw) ar.push([dx - 1, dy])
+      if (this.se) ar.push([dx, dy])
+    } else {
       const val = Math.pow(2, this.level - 2)
       this.nw._cellList(ar, dx - val, dy - val)
       this.ne._cellList(ar, dx + val, dy - val)
@@ -224,8 +247,10 @@ export class LifeUniverse {
   }
 
   expandTo(x, y) {
-    while (Math.max(x, y) >= Math.pow(2, this.root.level - 1)
-      || Math.min(x, y) < -Math.pow(2, this.root.level - 1)) {
+    while (
+      Math.max(x, y) >= Math.pow(2, this.root.level - 1) ||
+      Math.min(x, y) < -Math.pow(2, this.root.level - 1)
+    ) {
       this.root = this.root.expand()
     }
   }
@@ -247,7 +272,10 @@ export class LifeUniverse {
 
   step(k) {
     k = k || 0
-    while (this.root.level < 2 + k || this.root.centeredSubSubnode().pop !== this.root.pop)
+    while (
+      this.root.level < 2 + k ||
+      this.root.centeredSubSubnode().pop !== this.root.pop
+    )
       this.root = this.root.expand()
     this.root = this.root.step(k)
   }
@@ -269,7 +297,7 @@ export class LifeUniverse {
   static fromRLE(rle) {
     const universe = new this()
     const cells = decode(rle)
-    for (const [ x, y ] of cells) {
+    for (const [x, y] of cells) {
       universe.set(x, y, true)
     }
     return universe

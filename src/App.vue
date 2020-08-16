@@ -1,19 +1,23 @@
 <template>
   <div id="app" tabindex="1" @keydown="handleKeydown">
     <header>
-      <span>Generation {{generation}}{{generationTime !== null ? ` (${generationTime}ms)` : ''}}</span>
-      <span>Pop: {{liveCount}}</span>
-      <span>Step: {{pow2(stepSize)}}</span>
-      <span>{{-zoom > 0 ? pow2(-zoom) : 1}} : {{zoom > 0 ? pow2(zoom) : 1}}</span>
+      <span>
+        Generation {{ generation
+        }}{{ generationTime !== null ? ` (${generationTime}ms)` : '' }}
+      </span>
+      <span>Pop: {{ liveCount }}</span>
+      <span>Step: {{ pow2(stepSize) }}</span>
+      <span>
+        {{ -zoom > 0 ? pow2(-zoom) : 1 }} :
+        {{ zoom > 0 ? pow2(zoom) : 1 }}
+      </span>
     </header>
 
-    <LifeGrid ref="lifeGrid"
-      @toggle="toggle"
-    />
+    <LifeGrid ref="lifeGrid" @toggle="toggle" />
 
     <footer>
       <span class="controls">
-        <button @click="resume">{{timerID ? 'Stop' : 'Start'}}</button>
+        <button @click="resume">{{ timerID ? 'Stop' : 'Start' }}</button>
         <button @click="step">Step</button>
         <button @click="clear">Clear</button>
       </span>
@@ -21,15 +25,30 @@
         <button @click="save">Save</button>
         <button @click="loadPrompt">Load</button>
         <select v-model="preset">
-          <option value="">--Select a pattern--</option>
-          <optgroup v-for="(group, label) in examples" :key="label" :label="label">
-            <option v-for="(rle, name) in group" :key="name" v-text="name" :value="rle"></option>
+          <option value>--Select a pattern--</option>
+          <optgroup
+            v-for="(group, label) in examples"
+            :key="label"
+            :label="label"
+          >
+            <option
+              v-for="(rle, name) in group"
+              :key="name"
+              v-text="name"
+              :value="rle"
+            ></option>
           </optgroup>
         </select>
       </span>
       <span class="controls">
         <label for="speed-input">Speed</label>
-        <input id="speed-input" type="range" v-model.number="speed" min="1" max="100">
+        <input
+          id="speed-input"
+          type="range"
+          v-model.number="speed"
+          min="1"
+          max="100"
+        />
       </span>
       <span class="controls">
         <button :disabled="zoom <= -32" @click="handleZoom(-1)">-</button>
@@ -64,7 +83,7 @@ export default {
       liveCount: 0,
       preset: '',
       timerID: null,
-      examples: examples
+      examples: examples,
     }
   },
   methods: {
@@ -72,24 +91,25 @@ export default {
       return Math.pow(2, k)
     },
     handleWheel(evt) {
-      if (evt.deltaY < 0)
-        this.handleZoom(+1, evt.pageX, evt.pageY)
-      else
-        this.handleZoom(-1, evt.pageX, evt.pageY)
+      if (evt.deltaY < 0) this.handleZoom(+1, evt.pageX, evt.pageY)
+      else this.handleZoom(-1, evt.pageX, evt.pageY)
     },
     handleKeydown(evt) {
-      if (evt.keyCode === 219) // [
+      if (evt.keyCode === 219)
+        // [
         this.handleZoom(-1)
-      else if (evt.keyCode === 221) // ]
+      else if (evt.keyCode === 221)
+        // ]
         this.handleZoom(+1)
-      else if (evt.keyCode === 189) // -
+      else if (evt.keyCode === 189)
+        // -
         this.stepSize = Math.max(this.stepSize - 1, 0)
-      else if (evt.keyCode === 187) // =
+      else if (evt.keyCode === 187)
+        // =
         this.stepSize = Math.min(this.stepSize + 1, 32)
     },
     handleZoom(k, dx, dy) {
-      if (this.zoom + k > 8 || this.zoom + k < -32)
-        return
+      if (this.zoom + k > 8 || this.zoom + k < -32) return
       this.zoom += k
       dx = dx || document.body.clientWidth / 2
       dy = dy || document.body.clientHeight / 2
@@ -120,16 +140,14 @@ export default {
       if (this.timerID) {
         clearInterval(this.timerID)
         this.timerID = null
-      }
-      else
-        this.timerID = setInterval(this.step, 1000 / this.speed)
+      } else this.timerID = setInterval(this.step, 1000 / this.speed)
     },
     save() {
-      Swal({
+      Swal.fire({
         title: 'Save Pattern',
         text: 'Current pattern in RLE format:',
         input: 'text',
-        inputValue: this.universe.toRLE()
+        inputValue: this.universe.toRLE(),
       })
     },
     load(rle) {
@@ -139,13 +157,19 @@ export default {
         this.$refs.lifeGrid.center()
         this.universe = universe
         this.update()
-        const px = Math.min(document.body.clientWidth, document.body.clientHeight)
-        const zoomGoal = Math.min(4, Math.round(Math.log2(px) - universe.root.level))
+        const px = Math.min(
+          document.body.clientWidth,
+          document.body.clientHeight
+        )
+        const zoomGoal = Math.min(
+          4,
+          Math.round(Math.log2(px) - universe.root.level)
+        )
         this.handleZoom(zoomGoal - this.zoom)
       }
     },
     loadPrompt() {
-      Swal({
+      Swal.fire({
         title: 'Load Pattern',
         text: 'Enter pattern RLE:',
         input: 'text',
@@ -154,11 +178,11 @@ export default {
         inputValidator(value) {
           if (!RLE_RE.test(value))
             return 'Invalid RLE format, please check your input.'
-        }
+        },
       }).then(({ value }) => {
         this.load(value)
       })
-    }
+    },
   },
   watch: {
     speed(val) {
@@ -169,7 +193,7 @@ export default {
     },
     preset(val) {
       this.load(val)
-    }
+    },
   },
   mounted() {
     window.addEventListener('wheel', this.handleWheel)
@@ -184,8 +208,8 @@ export default {
     window.removeEventListener('wheel', this.handleWheel)
   },
   components: {
-    LifeGrid
-  }
+    LifeGrid,
+  },
 }
 </script>
 
@@ -226,7 +250,7 @@ header > span {
 header > span::before {
   position: relative;
   left: -20px;
-  content: "|";
+  content: '|';
 }
 
 footer {
@@ -247,7 +271,8 @@ footer {
   align-items: center;
 }
 
-.controls button, .controls select {
+.controls button,
+.controls select {
   margin: 3px;
 }
 

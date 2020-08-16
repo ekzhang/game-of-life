@@ -1,5 +1,6 @@
 <template>
-  <canvas class="grid"
+  <canvas
+    class="grid"
     ref="canvas"
     v-hammer:tap="handleTap"
     v-hammer:panstart="handlePanStart"
@@ -9,7 +10,7 @@
 
 <script>
 const MIN_BORDER_PX = 8
-const COLOR = 0xFF000000
+const COLOR = 0xff000000
 
 export default {
   data() {
@@ -18,7 +19,7 @@ export default {
       height: null,
       rowx: 0,
       colx: 0,
-      size: 16
+      size: 16,
     }
   },
   computed: {
@@ -35,8 +36,7 @@ export default {
       return Math.floor(this.colx)
     },
     cellWidth() {
-      if (this.size >= MIN_BORDER_PX)
-        return this.size - 1
+      if (this.size >= MIN_BORDER_PX) return this.size - 1
       return Math.max(1, this.size)
     },
     rowOffset() {
@@ -51,9 +51,9 @@ export default {
         colx: this.colx,
         size: this.size,
         width: this.width,
-        height: this.height
-      };
-    }
+        height: this.height,
+      }
+    },
   },
   methods: {
     handleTap(evt) {
@@ -129,16 +129,20 @@ export default {
       }
     },
     drawNode(data, node, size, dx, dy) {
-      if (!node || node.pop === 0 || dx + size <= 0 || dy + size <= 0
-          || dx >= this.width || dy >= this.height)
+      if (
+        !node ||
+        node.pop === 0 ||
+        dx + size <= 0 ||
+        dy + size <= 0 ||
+        dx >= this.width ||
+        dy >= this.height
+      )
         return
       if (size <= 1) {
         data[dy * this.width + dx] = COLOR
-      }
-      else if (node === true) {
+      } else if (node === true) {
         this.fillSquare(data, dx, dy, this.cellWidth)
-      }
-      else {
+      } else {
         size /= 2
         this.drawNode(data, node.nw, size, dx, dy)
         this.drawNode(data, node.ne, size, dx + size, dy)
@@ -151,10 +155,13 @@ export default {
         const imageData = this.ctx.createImageData(this.width, this.height)
         const data = new Int32Array(imageData.data.buffer)
         const dim = Math.pow(2, this.universe.root.level)
-        this.drawNode(data, this.universe.root,
+        this.drawNode(
+          data,
+          this.universe.root,
           this.size * dim,
           Math.round((-this.col0 - dim / 2) * this.size) - this.colOffset,
-          Math.round((-this.row0 - dim / 2) * this.size) - this.rowOffset)
+          Math.round((-this.row0 - dim / 2) * this.size) - this.rowOffset
+        )
         this.ctx.putImageData(imageData, 0, 0)
       }
     },
@@ -164,12 +171,12 @@ export default {
       if (this.size >= MIN_BORDER_PX) {
         this.drawGrid()
       }
-    }
+    },
   },
   watch: {
     all() {
       this.redraw()
-    }
+    },
   },
   mounted() {
     this.ctx = this.$refs.canvas.getContext('2d')
@@ -179,7 +186,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.handleResize)
-  }
+  },
 }
 </script>
 
