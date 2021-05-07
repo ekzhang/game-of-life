@@ -52,12 +52,12 @@
       </span>
       <span class="controls">
         <button :disabled="zoom <= -32" @click="handleZoom(-1)">-</button>
-        <span style="margin: 0 8px;">Zoom</span>
+        <span style="margin: 0 8px">Zoom</span>
         <button :disabled="zoom >= 8" @click="handleZoom(+1)">+</button>
       </span>
       <span class="controls">
         <button :disabled="stepSize <= 0" @click="stepSize--">-</button>
-        <span style="margin: 0 8px;">Step Size</span>
+        <span style="margin: 0 8px">Step Size</span>
         <button :disabled="stepSize >= 32" @click="stepSize++">+</button>
       </span>
     </footer>
